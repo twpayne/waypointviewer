@@ -62,7 +62,7 @@ class Wpt2json(webapp.RequestHandler):
                     feature_properties['radius'] = floatval(fields[15])
                 feature = {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': coordinates}, 'properties': feature_properties}
                 features.append(feature)
-        if self.request.get('debug'):
+        if debug:
             keywords = {'indent': 4, 'sort_keys': True}
         else:
             keywords = {}
