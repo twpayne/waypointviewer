@@ -26,6 +26,7 @@ import re
 class Wpt2json(webapp.RequestHandler):
 
     def get(self):
+        bbox = None
         debug = self.request.get('debug')
         url = self.request.get('url')
         feature_collection_properties = {}
@@ -47,6 +48,12 @@ class Wpt2json(webapp.RequestHandler):
             for line in lines[4:]:
                 fields = re.split(r'\s*,\s*', line)
                 coordinates = [float(fields[3]), float(fields[2]), 0.3048 * float(fields[14])]
+                if bbox:
+                    for i in xrange(0, 3):
+                        bbox[i] = min(bbox[i], coordinates[i])
+                        bbox[i + 3] = max(bbox[i + 3], coordinates[i])
+                else:
+                    bbox = coordinates + coordinates
                 feature_properties = {'id': fields[1], 'description': re.sub(r'\xd1', ',', fields[10])}
                 if fields[9]:
                     color = int(fields[9])
