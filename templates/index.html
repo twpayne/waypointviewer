@@ -1,0 +1,60 @@
+<html>
+	<head>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+		<script type="text/javascript">
+$(document).ready(function(){
+		$.getJSON("wpt2json.json?url={{ url }}", function(geojson) {
+			var map = new google.maps.Map($('#map').get(0), {
+				disableDoubleClickZoom: true,
+				mapTypeId: google.maps.MapTypeId.TERRAIN,
+			});
+			map.fitBounds(new google.maps.LatLngBounds(new google.maps.LatLng(geojson.bbox[1], geojson.bbox[0]), new google.maps.LatLng(geojson.bbox[4], geojson.bbox[3])));
+			$.each(geojson.features, function(i, feature) {
+				var position = new google.maps.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
+				var marker = new google.maps.Marker({
+					map: map,
+					position: position
+				});
+			});
+		});
+});
+		</script>
+		<title>Waypoint Viewer</title>
+	</head>
+	<body>
+		<div id="map" style="width: 100%; height: 100%">Loading...</div>
+		<div id="infoWindow" style="display: none">
+			<table>
+				<tr>
+					<th>ID:</th>
+					<td><input id="id" type="text"/></td>
+				</tr>
+				<tr>
+					<th>Description:</th>
+					<td><input id="description" type="text"/></td>
+				</tr>
+				<tr>
+					<th>Latitude:</th>
+					<td><input id="lat" type="text"/>&deg;</td>
+				</tr>
+				<tr>
+					<th>Longitude:</th>
+					<td><input id="lng" type="text"/>&deg;</td>
+				</tr>
+				<tr>
+					<th>Elevation:</th>
+					<td><input id="elevation" type="text"/>m</td>
+				</tr>
+				<tr>
+					<th>Radius:</th>
+					<td><input id="radius" type="text"/>m</td>
+				</tr>
+				<tr>
+					<th>Color:</th>
+					<td><input id="color" type="text"/>m</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>

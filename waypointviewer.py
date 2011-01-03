@@ -18,9 +18,20 @@
 from django.utils import simplejson
 from google.appengine.api.urlfetch import fetch
 from google.appengine.ext import webapp
+from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 import httplib
+import os.path
 import re
+
+
+class MainPage(webapp.RequestHandler):
+
+    def get(self):
+        url = self.request.get('url')
+        template_values = {'url': url}
+        path = os.path.join(os.path.dirname(__file__), 'templates', 'index.html')
+        self.response.out.write(template.render(path, template_values))
 
 
 class Wpt2json(webapp.RequestHandler):
@@ -71,7 +82,7 @@ class Wpt2json(webapp.RequestHandler):
         self.response.out.write(simplejson.dumps(feature_collection, **keywords))
 
 
-application = webapp.WSGIApplication([('/wpt2json.json', Wpt2json)], debug=True)
+application = webapp.WSGIApplication([('/', MainPage), ('/wpt2json.json', Wpt2json)], debug=True)
 
 
 def main():
