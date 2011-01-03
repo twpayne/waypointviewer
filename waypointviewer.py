@@ -66,7 +66,7 @@ class Wpt2json(webapp.RequestHandler):
             keywords = {'indent': 4, 'sort_keys': True}
         else:
             keywords = {}
-        feature_collection = {'type': 'FeatureCollection', 'features': features, 'properties': feature_collection_properties}
+        feature_collection = {'type': 'FeatureCollection', 'features': features, 'properties': feature_collection_properties, 'bbox': bbox}
         self.response.headers['content-type'] = 'application/json'
         self.response.out.write(simplejson.dumps(feature_collection, **keywords))
 
