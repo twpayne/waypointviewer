@@ -49,19 +49,16 @@ class Wpt2json(webapp.RequestHandler):
         debug = self.request.get('debug')
         wpt = self.request.get('wpt')
         feature_collection_properties = {}
-        if wpt:
-            feature_collection_properties['wpt'] = wpt
-            response = fetch(wpt)
-            if debug:
-                feature_collection_properties['content'] = response.content
-                feature_collection_properties['content_was_truncated'] = response.content_was_truncated
-                feature_collection_properties['final_url'] = response.final_url
-                headers = dict((key, response.headers[key]) for key in response.headers)
-                feature_collection_properties['headers'] = headers
-                feature_collection_properties['status_code'] = response.status_code
-            lines = response.content.splitlines()
-        else:
-            lines = []
+        feature_collection_properties['wpt'] = wpt
+        response = fetch(wpt)
+        if debug:
+            feature_collection_properties['content'] = response.content
+            feature_collection_properties['content_was_truncated'] = response.content_was_truncated
+            feature_collection_properties['final_url'] = response.final_url
+            headers = dict((key, response.headers[key]) for key in response.headers)
+            feature_collection_properties['headers'] = headers
+            feature_collection_properties['status_code'] = response.status_code
+        lines = response.content.splitlines()
         features = []
         if len(lines) >= 4 and re.match(r'\AOziExplorer\s+Waypoint\s+File\s+Version\s+\d+\.\d+\s*\Z', lines[0]) and re.match(r'\AWGS\s+84\s*\Z', lines[1]):
             for line in lines[4:]:
