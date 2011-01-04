@@ -1,7 +1,9 @@
 <html>
 	<head>
+		<link href="static/waypointviewer.css" rel="stylesheet" type="text/css"/>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
 		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+		<script type="text/javascript" src="static/richmarker-compiled.js"></script>
 		<script type="text/javascript">
 $(document).ready(function(){
 		$.getJSON("wpt2json.json?url={{ url }}", function(geojson) {
@@ -18,11 +20,25 @@ $(document).ready(function(){
 				map.fitBounds(bounds);
 			});
 			$.each(geojson.features, function(i, feature) {
+				var color = 'ffff00';
+				if (feature.properties.hasOwnProperty('color')) {
+					color = feature.properties.color;
+				}
+				var radius = 400;
+				if (feature.properties.hasOwnProperty('radius')) {
+					radius = feature.properties.radius;
+				}
 				var position = new google.maps.LatLng(
 					feature.geometry.coordinates[1],
 					feature.geometry.coordinates[0]
 				);
-				var marker = new google.maps.Marker({
+				var richMarkerContent = $('#richMarker').clone().attr({id: null}).show();
+				richMarkerContent.css('background-color', '#' + color);
+				$('#id', richMarkerContent).html(feature.properties.id);
+				var marker = new RichMarker({
+					anchor: RichMarkerPosition.MIDDLE,
+					content: richMarkerContent.get(0),
+					flat: true,
 					map: map,
 					position: position
 				});
@@ -36,15 +52,7 @@ $(document).ready(function(){
 				if (feature.properties.hasOwnProperty('description')) {
 					$('#description', content).html(feature.properties.description);
 				}
-				var radius = 400;
-				if (feature.properties.hasOwnProperty('radius')) {
-					radius = feature.properties.radius;
-				}
 				$('#radius', content).html(radius);
-				var color = 'ffff00';
-				if (feature.properties.hasOwnProperty('color')) {
-					color = feature.properties.color;
-				}
 				$('#color', content).html(color);
 				var circle = new google.maps.Circle({
 					center: position,
@@ -73,6 +81,9 @@ $(document).ready(function(){
 	</head>
 	<body>
 		<div id="map" style="width: 100%; height: 100%">Loading...</div>
+		<div id="richMarker" class="richMarker" style="display: none">
+			<span id="id"></span>
+		</div>
 		<div id="infoWindow" style="display: none">
 			<table>
 				<tr>
