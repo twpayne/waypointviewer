@@ -11,7 +11,7 @@ function Waypoint(options) {
 	this.set('map', options.map);
 
 	var richMarkerContent = $('#richMarker').clone().attr({id: null}).show();
-	richMarkerContent.css('background-color', '#' + options.color);
+	richMarkerContent.css('background-color', '#' + this.get('color'));
 	var label = this.get('id');
 	var match = /^([A-Z][0-9]{2})([0-9]{3})$/.exec(this.get('id'));
 	if (match && 10 * (match[2] - 1) <= this.get('elevation') && this.get('elevation') <= 10 * (match[2] + 1)) {
@@ -88,17 +88,13 @@ $(document).ready(function () {
 				),
 				radius: 400
 			};
-			if (feature.properties.hasOwnProperty('color')) {
-				options.color = feature.properties.color;
-			}
-			if (feature.properties.hasOwnProperty('description')) {
-				options.description = feature.properties.description;
-			}
+			$.each(['color', 'description', 'radius'], function (j, property) {
+				if (feature.properties.hasOwnProperty(property)) {
+					options[property] = feature.properties[property];
+				}
+			});
 			if (feature.geometry.coordinates.length > 2) {
 				options.elevation = feature.geometry.coordinates[2];
-			}
-			if (feature.properties.hasOwnProperty('radius')) {
-				options.radius = feature.properties.radius;
 			}
 			var waypoint = new Waypoint(options);
 			bounds.extend(options.position);
