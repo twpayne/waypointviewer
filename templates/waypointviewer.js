@@ -64,21 +64,18 @@ function Waypoint(options) {
 
 Waypoint.prototype = new google.maps.MVCObject();
 
-$(document).ready(function(){
-	$.getJSON('wpt2json.json?url={{ url|addslashes }}', function(geojson) {
-		var map = new google.maps.Map($('#map').get(0), {
-			disableDoubleClickZoom: true,
-			mapTypeId: google.maps.MapTypeId.TERRAIN
-		});
-		var bounds = new google.maps.LatLngBounds(
-			new google.maps.LatLng(geojson.bbox[1], geojson.bbox[0]),
-			new google.maps.LatLng(geojson.bbox[4], geojson.bbox[3])
-		);
-		map.fitBounds(bounds);
-		google.maps.event.addListener(map, 'dblclick', function () {
-			map.fitBounds(bounds);
-		});
-		$.each(geojson.features, function(i, feature) {
+$(document).ready(function () {
+
+	var map = new google.maps.Map($('#map').get(0), {
+		disableDoubleClickZoom: true,
+		mapTypeId: google.maps.MapTypeId.TERRAIN
+	});
+
+	var bounds = new google.maps.LatLngBounds();
+
+	var url = '{{ url|addslashes }}';
+	$.getJSON('wpt2json.json?url=' + url, function (geojson) {
+		$.each(geojson.features, function (i, feature) {
 			var options = {
 				color: 'ffff00',
 				description: '',
@@ -104,6 +101,21 @@ $(document).ready(function(){
 				options.radius = feature.properties.radius;
 			}
 			var waypoint = new Waypoint(options);
+			bounds.extend(options.position);
 		});
+		map.fitBounds(bounds);
 	});
+
+	var kml = '{{ kml|addslashes }}';
+	if (kml) {
+		var kmlLayer = new google.maps.KmlLayer(kml, {
+			map: map,
+			preserveViewport: true
+		});
+	}
+
+	google.maps.event.addListener(map, 'dblclick', function () {
+		map.fitBounds(bounds);
+	});
+
 });
