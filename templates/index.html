@@ -24,6 +24,10 @@ $(document).ready(function(){
 				if (feature.properties.hasOwnProperty('color')) {
 					color = feature.properties.color;
 				}
+				var elevation = 0;
+				if (feature.geometry.coordinates.length > 2) {
+					elevation = feature.geometry.coordinates[2];
+				}
 				var radius = 400;
 				if (feature.properties.hasOwnProperty('radius')) {
 					radius = feature.properties.radius;
@@ -34,7 +38,12 @@ $(document).ready(function(){
 				);
 				var richMarkerContent = $('#richMarker').clone().attr({id: null}).show();
 				richMarkerContent.css('background-color', '#' + color);
-				$('#id', richMarkerContent).html(feature.properties.id);
+				var label = feature.properties.id;
+				var match = /^([A-Z][0-9]{2})([0-9]{3})$/.exec(feature.properties.id);
+				if (match && 10 * (match[2] - 1) <= elevation && elevation <= 10 * (match[2] + 1)) {
+					label = match[1];
+				}
+				$('#label', richMarkerContent).html(label);
 				var marker = new RichMarker({
 					anchor: RichMarkerPosition.MIDDLE,
 					content: richMarkerContent.get(0),
@@ -46,9 +55,7 @@ $(document).ready(function(){
 				$('#id', infoWindowContent).html(feature.properties.id);
 				$('#lat', infoWindowContent).html(feature.geometry.coordinates[1]);
 				$('#lng', infoWindowContent).html(feature.geometry.coordinates[0]);
-				if (feature.geometry.coordinates.length > 2) {
-					$('#elevation', infoWindowContent).html(feature.geometry.coordinates[2]);
-				}
+				$('#elevation', infoWindowContent).html(elevation);
 				if (feature.properties.hasOwnProperty('description')) {
 					$('#description', infoWindowContent).html(feature.properties.description);
 				}
@@ -82,7 +89,7 @@ $(document).ready(function(){
 	<body>
 		<div id="map" style="width: 100%; height: 100%">Loading...</div>
 		<div id="richMarker" class="richMarker" style="display: none">
-			<span id="id"></span>
+			<span id="label"></span>
 		</div>
 		<div id="infoWindow" class="infoWindow" style="display: none">
 			<table>
