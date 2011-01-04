@@ -29,15 +29,30 @@ $(document).ready(function(){
 				if (feature.geometry.coordinates.length > 2) {
 					$('#elevation', content).html(feature.geometry.coordinates[2]);
 				}
-				if (feature.properties.hasOwnProperty('color')) {
-					$('#color', content).html(feature.properties.color);
-				}
 				if (feature.properties.hasOwnProperty('description')) {
 					$('#description', content).html(feature.properties.description);
 				}
+				var radius = 400;
 				if (feature.properties.hasOwnProperty('radius')) {
-					$('#radius', content).html(feature.properties.radius);
+					radius = feature.properties.radius;
 				}
+				$('#radius', content).html(radius);
+				var color = 'ffff00';
+				if (feature.properties.hasOwnProperty('color')) {
+					color = feature.properties.color;
+				}
+				$('#color', content).html(color);
+				var circle = new google.maps.Circle({
+					center: position,
+					clickable: false,
+					fillColor: color,
+					fillOpacity: 0.25,
+					map: map,
+					radius: radius,
+					strokeColor: color,
+					strokeOpacity: 1,
+					strokeWeight: 1
+				});
 				var infoWindow = new google.maps.InfoWindow({content: content.get(0)});
 				google.maps.event.addListener(marker, 'click', function () {
 					infoWindow.open(map, marker);
