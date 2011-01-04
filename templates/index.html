@@ -9,10 +9,14 @@ $(document).ready(function(){
 				disableDoubleClickZoom: true,
 				mapTypeId: google.maps.MapTypeId.TERRAIN
 			});
-			map.fitBounds(new google.maps.LatLngBounds(
+			var bounds = new google.maps.LatLngBounds(
 				new google.maps.LatLng(geojson.bbox[1], geojson.bbox[0]),
 				new google.maps.LatLng(geojson.bbox[4], geojson.bbox[3])
-			));
+			);
+			map.fitBounds(bounds);
+			google.maps.event.addListener(map, 'dblclick', function () {
+				map.fitBounds(bounds);
+			});
 			$.each(geojson.features, function(i, feature) {
 				var position = new google.maps.LatLng(
 					feature.geometry.coordinates[1],
