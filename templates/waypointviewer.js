@@ -1,5 +1,7 @@
 function Waypoint(options) {
 
+	var self = this;
+
 	this.set('id', options.id);
 	this.set('position', options.position);
 	this.set('elevation', options.elevation);
@@ -24,6 +26,7 @@ function Waypoint(options) {
 	});
 	marker.bindTo('position', this);
 	marker.bindTo('map', this);
+	this.set('marker', marker);
 
 	var circle = new google.maps.Circle({
 		clickable: false,
@@ -46,14 +49,15 @@ function Waypoint(options) {
 	$('#radius', infoWindowContent).html(this.get('radius'));
 	$('#color', infoWindowContent).html(this.get('color'));
 	var infoWindow = new google.maps.InfoWindow({content: infoWindowContent.get(0)});
+	this.set('infoWindow', infoWindow);
 
 	google.maps.event.addListener(marker, 'click', function () {
-		infoWindow.open(map, marker);
+		self.get('infoWindow').open(self.get('map'), self.get('marker'));
 	});
 
 	google.maps.event.addListener(marker, 'dblclick', function () {
-		map.panTo(position);
-		map.setZoom(15);
+		self.get('map').panTo(self.get('position'));
+		self.get('map').setZoom(15);
 	});
 
 }
