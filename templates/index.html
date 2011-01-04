@@ -22,6 +22,26 @@ $(document).ready(function(){
 					map: map,
 					position: position
 				});
+				var content = $('#infoWindow').clone().attr({id: null}).show();
+				$('#id', content).html(feature.properties.id);
+				$('#lat', content).html(feature.geometry.coordinates[1]);
+				$('#lng', content).html(feature.geometry.coordinates[0]);
+				if (feature.geometry.coordinates.length > 2) {
+					$('#elevation', content).html(feature.geometry.coordinates[2]);
+				}
+				if (feature.properties.hasOwnProperty('color')) {
+					$('#color', content).html(feature.properties.color);
+				}
+				if (feature.properties.hasOwnProperty('description')) {
+					$('#description', content).html(feature.properties.description);
+				}
+				if (feature.properties.hasOwnProperty('radius')) {
+					$('#radius', content).html(feature.properties.radius);
+				}
+				var infoWindow = new google.maps.InfoWindow({content: content.get(0)});
+				google.maps.event.addListener(marker, 'click', function () {
+					infoWindow.open(map, marker);
+				});
 			});
 		});
 });
@@ -34,31 +54,31 @@ $(document).ready(function(){
 			<table>
 				<tr>
 					<th>ID:</th>
-					<td><input id="id" type="text"/></td>
+					<td><span id="id"></span></td>
 				</tr>
 				<tr>
 					<th>Description:</th>
-					<td><input id="description" type="text"/></td>
+					<td><span id="description"></span></td>
 				</tr>
 				<tr>
 					<th>Latitude:</th>
-					<td><input id="lat" type="text"/>&deg;</td>
+					<td><span id="lat"></span>&deg;</td>
 				</tr>
 				<tr>
 					<th>Longitude:</th>
-					<td><input id="lng" type="text"/>&deg;</td>
+					<td><span id="lng"></span>&deg;</td>
 				</tr>
 				<tr>
 					<th>Elevation:</th>
-					<td><input id="elevation" type="text"/>m</td>
+					<td><span id="elevation"></span>m</td>
 				</tr>
 				<tr>
 					<th>Radius:</th>
-					<td><input id="radius" type="text"/>m</td>
+					<td><span id="radius"></span>m</td>
 				</tr>
 				<tr>
 					<th>Color:</th>
-					<td><input id="color" type="text"/>m</td>
+					<td><span id="color"></span>m</td>
 				</tr>
 			</table>
 		</div>
