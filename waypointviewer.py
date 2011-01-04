@@ -34,6 +34,16 @@ class MainPage(webapp.RequestHandler):
         self.response.out.write(template.render(path, template_values))
 
 
+class WaypointviewerJs(webapp.RequestHandler):
+
+    def get(self):
+        url = self.request.get('url')
+        template_values = {'url': url}
+        path = os.path.join(os.path.dirname(__file__), 'templates', 'waypointviewer.js')
+        self.response.headers['content-type'] = 'application/javascript'
+        self.response.out.write(template.render(path, template_values))
+
+
 class Wpt2json(webapp.RequestHandler):
 
     def get(self):
@@ -82,7 +92,7 @@ class Wpt2json(webapp.RequestHandler):
         self.response.out.write(simplejson.dumps(feature_collection, **keywords))
 
 
-application = webapp.WSGIApplication([('/', MainPage), ('/wpt2json.json', Wpt2json)], debug=True)
+application = webapp.WSGIApplication([('/', MainPage), ('/waypointviewer.js', WaypointviewerJs), ('/wpt2json.json', Wpt2json)], debug=True)
 
 
 def main():
