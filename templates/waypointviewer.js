@@ -88,17 +88,13 @@ $(document).ready(function () {
 				),
 				radius: 400
 			};
-			if (feature.properties.hasOwnProperty('color')) {
-				options.color = feature.properties.color;
-			}
-			if (feature.properties.hasOwnProperty('description')) {
-				options.description = feature.properties.description;
-			}
+			$.each(['color', 'description', 'radius'], function (j, property) {
+				if (feature.properties.hasOwnProperty(property)) {
+					options[property] = feature.properties[property];
+				}
+			});
 			if (feature.geometry.coordinates.length > 2) {
 				options.elevation = feature.geometry.coordinates[2];
-			}
-			if (feature.properties.hasOwnProperty('radius')) {
-				options.radius = feature.properties.radius;
 			}
 			var waypoint = new Waypoint(options);
 			bounds.extend(options.position);
