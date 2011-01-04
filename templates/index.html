@@ -61,6 +61,10 @@ $(document).ready(function(){
 				google.maps.event.addListener(marker, 'click', function () {
 					infoWindow.open(map, marker);
 				});
+				google.maps.event.addListener(marker, 'dblclick', function () {
+					map.panTo(position);
+					map.setZoom(15);
+				});
 			});
 		});
 });
