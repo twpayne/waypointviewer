@@ -28,7 +28,7 @@ import re
 class MainPage(webapp.RequestHandler):
 
     def get(self):
-        template_values = dict((key, self.request.get(key)) for key in ('kml', 'title', 'url'))
+        template_values = dict((key, self.request.get(key)) for key in ('kml', 'title', 'wpt'))
         path = os.path.join(os.path.dirname(__file__), 'templates', 'index.html')
         self.response.out.write(template.render(path, template_values))
 
@@ -36,7 +36,7 @@ class MainPage(webapp.RequestHandler):
 class WaypointviewerJs(webapp.RequestHandler):
 
     def get(self):
-        template_values = dict((key, self.request.get(key)) for key in ('kml', 'url'))
+        template_values = dict((key, self.request.get(key)) for key in ('kml', 'wpt'))
         path = os.path.join(os.path.dirname(__file__), 'templates', 'waypointviewer.js')
         self.response.headers['content-type'] = 'application/javascript'
         self.response.out.write(template.render(path, template_values))
@@ -47,11 +47,11 @@ class Wpt2json(webapp.RequestHandler):
     def get(self):
         bbox = None
         debug = self.request.get('debug')
-        url = self.request.get('url')
+        wpt = self.request.get('wpt')
         feature_collection_properties = {}
-        if url:
-            feature_collection_properties['url'] = url
-            response = fetch(url)
+        if wpt:
+            feature_collection_properties['wpt'] = wpt
+            response = fetch(wpt)
             if debug:
                 feature_collection_properties['content'] = response.content
                 feature_collection_properties['content_was_truncated'] = response.content_was_truncated

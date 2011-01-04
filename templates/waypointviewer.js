@@ -73,8 +73,8 @@ $(document).ready(function () {
 
 	var bounds = new google.maps.LatLngBounds();
 
-	var url = '{{ url|addslashes }}';
-	$.getJSON('wpt2json.json?url=' + url, function (geojson) {
+	var wpt = '{{ wpt|addslashes }}';
+	$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
 		$.each(geojson.features, function (i, feature) {
 			var options = {
 				color: 'ffff00',
