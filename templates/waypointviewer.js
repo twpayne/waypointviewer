@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	$.getJSON("wpt2json.json?url={{ url }}", function(geojson) {
+	$.getJSON("wpt2json.json?url={{ url|addslashes }}", function(geojson) {
 		var map = new google.maps.Map($('#map').get(0), {
 			disableDoubleClickZoom: true,
 			mapTypeId: google.maps.MapTypeId.TERRAIN
