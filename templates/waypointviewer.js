@@ -94,6 +94,9 @@ $(document).ready(function(){
 			if (feature.properties.hasOwnProperty('color')) {
 				options.color = feature.properties.color;
 			}
+			if (feature.properties.hasOwnProperty('description')) {
+				options.description = feature.properties.description;
+			}
 			if (feature.geometry.coordinates.length > 2) {
 				options.elevation = feature.geometry.coordinates[2];
 			}
