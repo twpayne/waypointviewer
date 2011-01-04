@@ -42,18 +42,18 @@ $(document).ready(function(){
 					map: map,
 					position: position
 				});
-				var content = $('#infoWindow').clone().attr({id: null}).show();
-				$('#id', content).html(feature.properties.id);
-				$('#lat', content).html(feature.geometry.coordinates[1]);
-				$('#lng', content).html(feature.geometry.coordinates[0]);
+				var infoWindowContent = $('#infoWindow').clone().attr({id: null}).show();
+				$('#id', infoWindowContent).html(feature.properties.id);
+				$('#lat', infoWindowContent).html(feature.geometry.coordinates[1]);
+				$('#lng', infoWindowContent).html(feature.geometry.coordinates[0]);
 				if (feature.geometry.coordinates.length > 2) {
-					$('#elevation', content).html(feature.geometry.coordinates[2]);
+					$('#elevation', infoWindowContent).html(feature.geometry.coordinates[2]);
 				}
 				if (feature.properties.hasOwnProperty('description')) {
-					$('#description', content).html(feature.properties.description);
+					$('#description', infoWindowContent).html(feature.properties.description);
 				}
-				$('#radius', content).html(radius);
-				$('#color', content).html(color);
+				$('#radius', infoWindowContent).html(radius);
+				$('#color', infoWindowContent).html(color);
 				var circle = new google.maps.Circle({
 					center: position,
 					clickable: false,
@@ -65,7 +65,7 @@ $(document).ready(function(){
 					strokeOpacity: 1,
 					strokeWeight: 1
 				});
-				var infoWindow = new google.maps.InfoWindow({content: content.get(0)});
+				var infoWindow = new google.maps.InfoWindow({content: infoWindowContent.get(0)});
 				google.maps.event.addListener(marker, 'click', function () {
 					infoWindow.open(map, marker);
 				});
