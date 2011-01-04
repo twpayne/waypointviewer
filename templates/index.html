@@ -7,7 +7,7 @@ $(document).ready(function(){
 		$.getJSON("wpt2json.json?url={{ url }}", function(geojson) {
 			var map = new google.maps.Map($('#map').get(0), {
 				disableDoubleClickZoom: true,
-				mapTypeId: google.maps.MapTypeId.TERRAIN,
+				mapTypeId: google.maps.MapTypeId.TERRAIN
 			});
 			map.fitBounds(new google.maps.LatLngBounds(
 				new google.maps.LatLng(geojson.bbox[1], geojson.bbox[0]),
