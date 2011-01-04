@@ -77,8 +77,8 @@ class Wpt2json(webapp.RequestHandler):
                 if fields[9]:
                     color = int(fields[9])
                     feature_properties['color'] = '%02x%02x%02x' % (color & 0xff, (color >> 8) & 0xff, (color >> 16) & 0xff)
-                if len(fields) > 15 and fields[15]:
-                    feature_properties['radius'] = floatval(fields[15])
+                if len(fields) > 13 and fields[13]:
+                    feature_properties['radius'] = float(fields[13])
                 feature = {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': coordinates}, 'properties': feature_properties}
                 features.append(feature)
         if debug:
