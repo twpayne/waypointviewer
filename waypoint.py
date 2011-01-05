@@ -29,9 +29,9 @@ def feature_collection(lines, debug=False):
             match = re.match(r'\AW\s+(\S+)\s+A\s+(\d+\.\d+).*([NS])\s+(\d+\.\d+).*([EW])\s+\d{2}-(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)-\d{2}\s+\d{2}:\d{2}:\d{2}\s+(-?\d+(?:\.\d+))(?:\s+(.*))?\Z', line)
             if match:
                 coordinates = [float(match.group(4)), float(match.group(2)), float(match.group(6))]
-                if match.group(5) == 'S':
+                if match.group(5) == 'W':
                     coordinates[0] = -coordinates[0]
-                if match.group(3) == 'W':
+                if match.group(3) == 'S':
                     coordinates[1] = -coordinates[1]
                 feature_properties = {'id': match.group(1), 'description': match.group(7)}
                 feature = {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': coordinates}, 'properties': feature_properties}
