@@ -10,12 +10,11 @@
 .richMarker {
 	border-radius: 3px;
 	border-style: solid;
-	border-width: 0;
+	border-width: 1px;
 	color: black;
 	cursor: pointer;
 	font-family: verdana, sans-serif;
 	font-size: 7pt;
-	height: 10px;
 	margin: 0px;
 	padding: 0px 2px;
 }
