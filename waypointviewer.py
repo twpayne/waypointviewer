@@ -45,7 +45,6 @@ class WaypointviewerJs(webapp.RequestHandler):
 class Wpt2json(webapp.RequestHandler):
 
     def get(self):
-        bbox = None
         debug = self.request.get('debug')
         wpt = self.request.get('wpt')
         feature_collection_properties = {}
@@ -88,12 +87,6 @@ class Wpt2json(webapp.RequestHandler):
             for line in lines[4:]:
                 fields = re.split(r'\s*,\s*', line)
                 coordinates = [float(fields[3]), float(fields[2]), 0.3048 * float(fields[14])]
-                if bbox:
-                    for i in xrange(0, 3):
-                        bbox[i] = min(bbox[i], coordinates[i])
-                        bbox[i + 3] = max(bbox[i + 3], coordinates[i])
-                else:
-                    bbox = coordinates + coordinates
                 feature_properties = {'id': fields[1], 'description': re.sub(r'\xd1', ',', fields[10])}
                 if fields[9]:
                     color = int(fields[9])
@@ -106,7 +99,7 @@ class Wpt2json(webapp.RequestHandler):
             keywords = {'indent': 4, 'sort_keys': True}
         else:
             keywords = {}
-        feature_collection = {'type': 'FeatureCollection', 'features': features, 'properties': feature_collection_properties, 'bbox': bbox}
+        feature_collection = {'type': 'FeatureCollection', 'features': features, 'properties': feature_collection_properties}
         self.response.headers['content-type'] = 'application/json'
         self.response.out.write(simplejson.dumps(feature_collection, **keywords))
 
