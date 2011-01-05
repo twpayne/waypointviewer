@@ -37,7 +37,7 @@ def feature_collection(lines, debug=False):
                 feature = {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': coordinates}, 'properties': feature_properties}
                 features.append(feature)
                 continue
-            match = re.match('\Aw\s+Waypoint,\d+,-?\d+(?:\.\d+)?,\d+,(\d+),\d+,\d+,[^,]*,(-?\d+(?:\.\d+)?)', line)
+            match = re.match('\Aw\s+[^,]*,\d+,-?\d+(?:\.\d+)?,\d+,(\d+),\d+,\d+,[^,]*,(-?\d+(?:\.\d+)?)', line)
             if match and len(features) > 0:
                 feature_properties = features[-1]['properties']
                 color = int(match.group(1))
