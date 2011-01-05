@@ -15,7 +15,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from django.utils import simplejson
 import re
 
 
@@ -67,6 +66,7 @@ def feature_collection(lines, debug=False):
 
 
 if __name__ == '__main__':
+    import json
     import sys
     fc = feature_collection(sys.stdin.readlines(), debug=True)
     print simplejson.dumps(fc, indent=4, sort_keys=True)
