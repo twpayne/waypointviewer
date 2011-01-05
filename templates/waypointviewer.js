@@ -1,3 +1,6 @@
+var kml = '{{ kml|addslashes }}';
+var wpt = '{{ wpt|addslashes }}';
+
 function Waypoint(options) {
 
 	var self = this;
@@ -73,7 +76,6 @@ $(document).ready(function () {
 
 	var bounds = new google.maps.LatLngBounds();
 
-	var wpt = '{{ wpt|addslashes }}';
 	$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
 		$.each(geojson.features, function (i, feature) {
 			var options = {
@@ -102,7 +104,6 @@ $(document).ready(function () {
 		map.fitBounds(bounds);
 	});
 
-	var kml = '{{ kml|addslashes }}';
 	if (kml) {
 		var kmlLayer = new google.maps.KmlLayer(kml, {
 			map: map,
