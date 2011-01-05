@@ -22,7 +22,8 @@ from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 import httplib
 import os.path
-import re
+
+import waypoint
 
 
 class MainPage(webapp.RequestHandler):
@@ -47,9 +48,8 @@ class Wpt2json(webapp.RequestHandler):
     def get(self):
         debug = self.request.get('debug')
         wpt = self.request.get('wpt')
-        feature_collection_properties = {}
-        feature_collection_properties['wpt'] = wpt
         response = fetch(wpt)
+        feature_collection = waypoint.feature_collection(response.content.splitlines(), debug=debug)
         if debug:
             feature_collection_properties['content'] = response.content
             feature_collection_properties['content_was_truncated'] = response.content_was_truncated
@@ -57,49 +57,9 @@ class Wpt2json(webapp.RequestHandler):
             headers = dict((key, response.headers[key]) for key in response.headers)
             feature_collection_properties['headers'] = headers
             feature_collection_properties['status_code'] = response.status_code
-        lines = response.content.splitlines()
-        features = []
-        if len(lines) >= 2 and re.match(r'\AG\s+WGS\s+84\s*\Z', lines[0]) and re.match(r'\AU\s+1\s*\Z', lines[1]):
-            for line in lines[2:]:
-                match = re.match(r'\AW\s+(\S+)\s+A\s+(\d+\.\d+).*([NS])\s+(\d+\.\d+).*([EW])\s+\d{2}-(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)-\d{2}\s+\d{2}:\d{2}:\d{2}\s+(-?\d+(?:\.\d+))(?:\s+(.*))?\Z', line)
-                if match:
-                    coordinates = [float(match.group(4)), float(match.group(2)), float(match.group(6))]
-                    if match.group(5) == 'S':
-                        coordinates[0] = -coordinates[0]
-                    if match.group(3) == 'W':
-                        coordinates[1] = -coordinates[1]
-                    feature_properties = {}
-                    feature_properties['id'] = match.group(1)
-                    feature_properties['description'] = match.group(7)
-                    feature = {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': coordinates}, 'properties': feature_properties}
-                    features.append(feature)
-                    continue
-                match = re.match('\Aw\s+Waypoint,\d+,-?\d+(?:\.\d+)?,\d+,(\d+),\d+,\d+,[^,]*,(-?\d+(?:\.\d+)?)', line)
-                if match and len(features) > 0:
-                    feature_properties = features[-1]['properties']
-                    color = int(match.group(1))
-                    feature_properties['color'] = '%02x%02x%02x' % (color & 0xff, (color >> 8) & 0xff, (color >> 16) & 0xff)
-                    radius = float(match.group(2))
-                    if radius > 0.0:
-                        feature_properties['radius'] = radius
-                    continue
-        elif len(lines) >= 4 and re.match(r'\AOziExplorer\s+Waypoint\s+File\s+Version\s+\d+\.\d+\s*\Z', lines[0]) and re.match(r'\AWGS\s+84\s*\Z', lines[1]):
-            for line in lines[4:]:
-                fields = re.split(r'\s*,\s*', line)
-                coordinates = [float(fields[3]), float(fields[2]), 0.3048 * float(fields[14])]
-                feature_properties = {'id': fields[1], 'description': re.sub(r'\xd1', ',', fields[10])}
-                if fields[9]:
-                    color = int(fields[9])
-                    feature_properties['color'] = '%02x%02x%02x' % (color & 0xff, (color >> 8) & 0xff, (color >> 16) & 0xff)
-                if len(fields) > 13 and fields[13]:
-                    feature_properties['radius'] = float(fields[13])
-                feature = {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': coordinates}, 'properties': feature_properties}
-                features.append(feature)
-        if debug:
             keywords = {'indent': 4, 'sort_keys': True}
         else:
             keywords = {}
-        feature_collection = {'type': 'FeatureCollection', 'features': features, 'properties': feature_collection_properties}
         self.response.headers['content-type'] = 'application/json'
         self.response.out.write(simplejson.dumps(feature_collection, **keywords))
 
