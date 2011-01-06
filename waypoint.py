@@ -52,8 +52,9 @@ def feature_collection(lines, debug=False):
         feature_collection_properties['format'] = 'oziexplorer'
         for line in lines[4:]:
             fields = re.split(r'\s*,\s*', line)
-            # FIXME should ignore elevation if it is equal to -777
-            coordinates = [float(fields[3]), float(fields[2]), 0.3048 * float(fields[14])]
+            coordinates = [float(fields[3]), float(fields[2])]
+            if float(fields[14]) != -777:
+                coordinates.append(0.3048 * float(fields[14]))
             feature_properties = {'id': fields[1], 'description': re.sub(r'\xd1', ',', fields[10])}
             if fields[9]:
                 color = int(fields[9])
