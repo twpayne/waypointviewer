@@ -7,6 +7,7 @@ install on your webserver, just link to http://waypointviewer.appspot.com/
 specifying a link to the waypoints file hosted on your server.
 
 Examples:
+
 * [British Open Slovenia 2010](http://waypointviewer.appspot.com/?title=British%20Open%20Slovenia%202010&wpt=http://www.slovenia-pgopen.com/downloads/Kobarid_Lijak.cup)
 * [Balises Vosges](http://waypointviewer.appspot.com/?title=Balises%20Vosges&wpt=http://lavl.free.fr/documents/Balises-Vosges.wpt&kml=http://lavl.free.fr/documents/EspaceAerienVosges.kml)
 * [French Championships 2010](http://waypointviewer.appspot.com/?title=French%20Championships%202010&wpt=http://parapente.ffvl.fr/compet/1405/balises)
