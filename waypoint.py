@@ -70,4 +70,4 @@ if __name__ == '__main__':
     import json
     import sys
     fc = feature_collection(sys.stdin.readlines(), debug=True)
-    print simplejson.dumps(fc, indent=4, sort_keys=True)
+    print json.dumps(fc, indent=4, sort_keys=True)
