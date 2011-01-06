@@ -27,7 +27,22 @@ class TestFeatureCollection(unittest.TestCase):
         self.assertEqual(fc['features'][0]['properties']['description'], None)
         self.assertEqual(fc['properties']['format'], 'compegps')
         self.assertEqual(fc['properties']['errors'], [])
-                
+
+    def test_formatgeo(self):
+        lines = [
+            '$FormatGEO',
+            'A01095    N 42 42 46.98    W 006 26 10.68   954  A01095']
+        fc = waypoint.feature_collection(lines, debug=True)
+        self.assertEqual(fc['type'], 'FeatureCollection')
+        self.assertEqual(fc['features'][0]['type'], 'Feature')
+        self.assertEqual(fc['features'][0]['geometry']['type'], 'Point')
+        self.assertAlmostEqual(fc['features'][0]['geometry']['coordinates'][0], -6.4363000)
+        self.assertAlmostEqual(fc['features'][0]['geometry']['coordinates'][1], 42.7130500)
+        self.assertEqual(fc['features'][0]['geometry']['coordinates'][2], 954.0)
+        self.assertEqual(fc['features'][0]['properties']['id'], 'A01095')
+        self.assertEqual(fc['features'][0]['properties']['description'], 'A01095')
+        self.assertEqual(fc['properties']['format'], 'formatgeo')
+        self.assertEqual(fc['properties']['errors'], [])
 
     def test_oziexplorer(self):
         lines = [

@@ -48,6 +48,26 @@ def feature_collection(lines, debug=False):
                 continue
             if debug:
                 feature_collection_properties['errors'].append(line)
+    elif len(lines) >= 1 and re.match(r'\A\$FormatGEO\s*\Z', lines[0]):
+        feature_collection_properties['format'] = 'formatgeo'
+        for line in lines[1:]:
+            #match = re.match(r'\A(\S+)\s+([NS])\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s+([EW])\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s+(-?\d+)\s+(.*)\Z', line)
+            match = re.match(r'\A(\S+)\s+([NS])\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s+([EW])\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s+(-?\d+)\s+(.*)\s*\Z', line)
+            if match:
+                coordinates = [
+                    int(match.group(7)) + int(match.group(8)) / 60.0 + float(match.group(9)) / 3600.0,
+                    int(match.group(3)) + int(match.group(4)) / 60.0 + float(match.group(5)) / 3600.0,
+                    int(match.group(10))]
+                if match.group(6) == 'W':
+                    coordinates[0] = -coordinates[0]
+                if match.group(2) == 'S':
+                    coordinates[1] = -coordinates[1]
+                feature_properties = {'id': match.group(1), 'description': match.group(11)}
+                feature = {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': coordinates}, 'properties': feature_properties}
+                features.append(feature)
+                continue
+            if debug:
+                feature_collection_properties['errors'].append(line)
     elif len(lines) >= 4 and re.match(r'\AOziExplorer\s+Waypoint\s+File\s+Version\s+\d+\.\d+\s*\Z', lines[0]) and re.match(r'\AWGS\s+84\s*\Z', lines[1]):
         feature_collection_properties['format'] = 'oziexplorer'
         for line in lines[4:]:
