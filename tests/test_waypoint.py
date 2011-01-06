@@ -44,6 +44,23 @@ class TestFeatureCollection(unittest.TestCase):
         self.assertEqual(fc['properties']['format'], 'formatgeo')
         self.assertEqual(fc['properties']['errors'], [])
 
+    def test_seeyou(self):
+        lines = [
+            'Title,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency,Description',
+            '"T01",T01068,,4606.633N,01343.667E,680.0m,1,,,,']
+        fc = waypoint.feature_collection(lines, debug=True)
+        self.assertEqual(fc['properties']['errors'], [])
+        self.assertEqual(fc['type'], 'FeatureCollection')
+        self.assertEqual(fc['features'][0]['type'], 'Feature')
+        self.assertEqual(fc['features'][0]['geometry']['type'], 'Point')
+        self.assertAlmostEqual(fc['features'][0]['geometry']['coordinates'][0], 13.7277833)
+        self.assertAlmostEqual(fc['features'][0]['geometry']['coordinates'][1], 46.1105500)
+        self.assertEqual(fc['features'][0]['geometry']['coordinates'][2], 680.0)
+        self.assertEqual(fc['features'][0]['properties']['id'], 'T01068')
+        self.assertEqual(fc['features'][0]['properties']['description'], '')
+        self.assertEqual(fc['properties']['format'], 'seeyou')
+        self.assertEqual(fc['properties']['errors'], [])
+
     def test_oziexplorer(self):
         lines = [
             'OziExplorer Waypoint File Version 1.0',

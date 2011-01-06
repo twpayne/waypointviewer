@@ -18,6 +18,10 @@
 import re
 
 
+class WaypointError(RuntimeError):
+    pass
+
+
 def feature_collection(lines, debug=False):
     features = []
     feature_collection_properties = {}
@@ -51,7 +55,6 @@ def feature_collection(lines, debug=False):
     elif len(lines) >= 1 and re.match(r'\A\$FormatGEO\s*\Z', lines[0]):
         feature_collection_properties['format'] = 'formatgeo'
         for line in lines[1:]:
-            #match = re.match(r'\A(\S+)\s+([NS])\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s+([EW])\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s+(-?\d+)\s+(.*)\Z', line)
             match = re.match(r'\A(\S+)\s+([NS])\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s+([EW])\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s+(-?\d+)\s+(.*)\s*\Z', line)
             if match:
                 coordinates = [
@@ -68,6 +71,48 @@ def feature_collection(lines, debug=False):
                 continue
             if debug:
                 feature_collection_properties['errors'].append(line)
+    elif len(lines) > 1 and re.match(r'\ATitle,Code,Country,Latitude,Longitude,Elevation,Style,Direction,Length,Frequency,Description', lines[0]):
+        feature_collection_properties['format'] = 'seeyou'
+        columns = re.split(r'\s*,\s*', lines[0].rstrip())
+        for line in lines[1:]:
+            try:
+                fields = dict((columns[i], value) for (i, value) in enumerate(re.split(r'\s*,\s*', line.rstrip())))
+                print fields
+                match = re.match(r'\A(\d\d\d)(\d\d\.\d\d\d)([EW])\Z', fields['Longitude'])
+                if not match:
+                    raise WaypointError
+                longitude = int(match.group(1)) + float(match.group(2)) / 60.0
+                if match.group(3) == 'W':
+                    longitude = -longitude
+                match = re.match(r'\A(\d\d)(\d\d\.\d\d\d)([NS])\Z', fields['Latitude'])
+                if not match:
+                    raise WaypointError
+                latitude = int(match.group(1)) + float(match.group(2)) / 60.0
+                if match.group(3) == 'S':
+                    latitude = -latitude
+                match = re.match(r'\A(\d+(?:\.\d*)?)(m|ft)\Z', fields['Elevation'])
+                if not match:
+                    raise WaypointError
+                elevation = float(match.group(1))
+                if match.group(2) == 'ft':
+                    elevation *= 0.3048
+                coordinates = [longitude, latitude, elevation]
+                match = re.match(r'\A"(.*)"\Z', fields['Code'])
+                if match:
+                    code = match.group(1)
+                else:
+                    code = fields['Code']
+                match = re.match(r'\A"(.*)"\Z', fields['Description'])
+                if match:
+                    description = match.group(1)
+                else:
+                    description = fields['Description']
+                feature_properties = {'id': code, 'description': description}
+                feature = {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': coordinates}, 'properties': feature_properties}
+                features.append(feature)
+            except WaypointError:
+                if debug:
+                    feature_collection_properties['errors'].append(line)
     elif len(lines) >= 4 and re.match(r'\AOziExplorer\s+Waypoint\s+File\s+Version\s+\d+\.\d+\s*\Z', lines[0]) and re.match(r'\AWGS\s+84\s*\Z', lines[1]):
         feature_collection_properties['format'] = 'oziexplorer'
         for line in lines[4:]:
