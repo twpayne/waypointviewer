@@ -50,7 +50,6 @@ function Waypoint(options) {
 	$('#elevation', infoWindowContent).html(this.get('elevation'));
 	$('#description', infoWindowContent).html(this.get('description'));
 	$('#radius', infoWindowContent).html(this.get('radius'));
-	$('#color', infoWindowContent).html(this.get('color'));
 	var infoWindow = new google.maps.InfoWindow({content: infoWindowContent.get(0)});
 	this.set('infoWindow', infoWindow);
 
