@@ -53,39 +53,26 @@
 		<hr/>
 		<p>Create your waypoint map now:</p>
 		<form action="/" method="get">
-			<table>
-				<tr>
-					<td rowspan="3" valign="top"><font size="+3"><b>1</b></font></td>
-					<td>(Required) Link to waypoint file hosted on your webserver:</td>
-				</tr>
-				<tr>
-					<td><input name="wpt" size="80" type="text" value="{{ wpt|escape }}"/></td>
-				</tr>
-				<tr>
-					<td><font size="-1">Example: <i>http://www.slovenia-pgopen.com/downloads/Kobarid_Lijak.wpt</i><br/>CompeGPS, FormatGEO, OziExplorer and SeeYou formats supported</font></td>
-				</tr>
-				<tr>
-					<td rowspan="3" valign="top"><font size="+3"><b>2</b></font></td>
-					<td>(Optional) Title:</td>
-				</tr>
-				<tr>
-					<td><input name="title" size="80" type="text" value="{{ title|escape }}"/><br/><font size="-1"></font></td></td>
-				</tr>
-				<tr>
-					<td><font size="-1">Example: <i>British Open Slovenia 2010</i></font></td>
-				</tr>
-				<tr>
-					<td rowspan="2" valign="top"><font size="+3"><b>3</b></font></td>
-					<td>Link to KML overlay hosted on your webserver:</td>
-				</tr>
-				<tr>
-					<td><input name="kml" size="80" type="text" value="{{ kml|escape }}"/></td>
-				</tr>
-				<tr>
-					<td valign="top"><font size="+3"><b>4</b></font></td>
-					<td><input type="submit" value="Go"/></td>
-				</tr>
-			</table>
+			<ol>
+				<li>
+					(Required) Link to waypoint file hosted on your webserver:<br/>
+					<input name="wpt" size="80" type="text" value="{{ wpt|escape }}"/><br/>
+					Example: <i>http://www.slovenia-pgopen.com/downloads/Kobarid_Lijak.wpt</i><br/>
+					CompeGPS, FormatGEO, OziExplorer and SeeYou formats supported
+				</li>
+				<li>
+					(Optional) Title:<br/>
+					<input name="title" size="80" type="text" value="{{ title|escape }}"/><br/>
+					Example: <i>British Open Slovenia 2010</i>
+				</li>
+				<li>
+					(Optional) Link to KML overlay hosted on your webserver:<br/>
+					<input name="kml" size="80" type="text" value="{{ kml|escape }}"/>
+				</li>
+				<li>
+					<input type="submit" value="Go"/>
+				</li>
+			</ol>
 		</form>
 		<hr/>
 		<p><a href="http://github.com/twpayne/waypointviewer">http://github.com/twpayne/waypointviewer</a></p>
