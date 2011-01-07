@@ -50,32 +50,45 @@
 	</head>
 	<body>
 		<h1>Waypoint Viewer</h1>
+		<hr/>
 		<p>Create your waypoint map now:</p>
 		<form action="/" method="get">
 			<table>
 				<tr>
-					<td>Link to waypoint file:</td>
-					<td><input name="wpt" type="text" value="{{ wpt|escape }}"/><br/><font size="-1">CompeGPS, FormatGEO, OziExplorer and SeeYou supported<br/>Example: http://www.slovenia-pgopen.com/downloads/Kobarid_Lijak.wpt</font></td>
-					<td>(required)</td>
+					<td rowspan="3" valign="top"><font size="+3"><b>1</b></font></td>
+					<td>(Required) Link to waypoint file hosted on your webserver:</td>
 				</tr>
 				<tr>
-					<td>Title:</td>
-					<td><input name="title" type="text" value="{{ title|escape }}"/><br/><font size="-1">Example: British Open Slovenia 2010</font></td></td>
-					<td>(optional)</td>
+					<td><input name="wpt" size="80" type="text" value="{{ wpt|escape }}"/></td>
 				</tr>
 				<tr>
-					<td>Link to KML overlay:</td>
-					<td><input name="kml" type="text" value="{{ kml|escape }}"/></td>
-					<td>(optional)</td>
+					<td><font size="-1">Example: <i>http://www.slovenia-pgopen.com/downloads/Kobarid_Lijak.wpt</i><br/>CompeGPS, FormatGEO, OziExplorer and SeeYou formats supported</font></td>
 				</tr>
 				<tr>
-					<td colspan="3">
-						<input type="submit"/>
-					</td>
+					<td rowspan="3" valign="top"><font size="+3"><b>2</b></font></td>
+					<td>(Optional) Title:</td>
+				</tr>
+				<tr>
+					<td><input name="title" size="80" type="text" value="{{ title|escape }}"/><br/><font size="-1"></font></td></td>
+				</tr>
+				<tr>
+					<td><font size="-1">Example: <i>British Open Slovenia 2010</i></font></td>
+				</tr>
+				<tr>
+					<td rowspan="2" valign="top"><font size="+3"><b>3</b></font></td>
+					<td>Link to KML overlay hosted on your webserver:</td>
+				</tr>
+				<tr>
+					<td><input name="kml" size="80" type="text" value="{{ kml|escape }}"/></td>
+				</tr>
+				<tr>
+					<td valign="top"><font size="+3"><b>4</b></font></td>
+					<td><input type="submit" value="Go"/></td>
 				</tr>
 			</table>
 		</form>
-		<a href="http://github.com/twpayne/waypointviewer">http://github.com/twpayne/waypointviewer</a>
+		<hr/>
+		<p><a href="http://github.com/twpayne/waypointviewer">http://github.com/twpayne/waypointviewer</a></p>
 	</body>
 </html>
 {% endif %}
