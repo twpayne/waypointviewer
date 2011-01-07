@@ -1,3 +1,4 @@
+{% if wpt %}
 <html>
 	<head>
 		<link href="static/waypointviewer.css" rel="stylesheet" type="text/css"/>
@@ -42,3 +43,39 @@
 		</div>
 	</body>
 </html>
+{% else %}
+<html>
+	<head>
+		<title>Waypoint Viewer</title>
+	</head>
+	<body>
+		<h1>Waypoint Viewer</h1>
+		<p>Create your waypoint map now:</p>
+		<form action="/" method="get">
+			<table>
+				<tr>
+					<td>Link to waypoint file:</td>
+					<td><input name="wpt" type="text"/><br/><font size="-1">CompeGPS, FormatGEO, OziExplorer and SeeYou supported<br/>Example: http://www.slovenia-pgopen.com/downloads/Kobarid_Lijak.wpt</font></td>
+					<td>(required)</td>
+				</tr>
+				<tr>
+					<td>Title:</td>
+					<td><input name="title" type="text"/><br/><font size="-1">Example: British Open Slovenia 2010</font></td></td>
+					<td>(optional)</td>
+				</tr>
+				<tr>
+					<td>Link to KML overlay:</td>
+					<td><input name="kml" type="text"/></td>
+					<td>(optional)</td>
+				</tr>
+				<tr>
+					<td colspan="3">
+						<input type="submit"/>
+					</td>
+				</tr>
+			</table>
+		</form>
+		<a href=http://github.com/twpayne/waypointviewer">http://github.com/twpayne/waypointviewer</a>
+	</body>
+</html>
+{% endif %}
