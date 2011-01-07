@@ -55,17 +55,17 @@
 			<table>
 				<tr>
 					<td>Link to waypoint file:</td>
-					<td><input name="wpt" type="text"/><br/><font size="-1">CompeGPS, FormatGEO, OziExplorer and SeeYou supported<br/>Example: http://www.slovenia-pgopen.com/downloads/Kobarid_Lijak.wpt</font></td>
+					<td><input name="wpt" type="text" value="{{ wpt|escape }}"/><br/><font size="-1">CompeGPS, FormatGEO, OziExplorer and SeeYou supported<br/>Example: http://www.slovenia-pgopen.com/downloads/Kobarid_Lijak.wpt</font></td>
 					<td>(required)</td>
 				</tr>
 				<tr>
 					<td>Title:</td>
-					<td><input name="title" type="text"/><br/><font size="-1">Example: British Open Slovenia 2010</font></td></td>
+					<td><input name="title" type="text" value="{{ title|escape }}"/><br/><font size="-1">Example: British Open Slovenia 2010</font></td></td>
 					<td>(optional)</td>
 				</tr>
 				<tr>
 					<td>Link to KML overlay:</td>
-					<td><input name="kml" type="text"/></td>
+					<td><input name="kml" type="text" value="{{ kml|escape }}"/></td>
 					<td>(optional)</td>
 				</tr>
 				<tr>
