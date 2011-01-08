@@ -38,7 +38,7 @@ class WaypointviewerJs(webapp.RequestHandler):
     def get(self):
         template_values = dict((key, self.request.get(key)) for key in ('kml', 'wpt'))
         path = os.path.join(os.path.dirname(__file__), 'templates', 'waypointviewer.js')
-        self.response.headers['content-type'] = 'application/javascript'
+        self.response.headers['content-type'] = 'text/javascript'
         self.response.out.write(template.render(path, template_values))
 
 
