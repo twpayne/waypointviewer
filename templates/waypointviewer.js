@@ -179,6 +179,12 @@ $.extend(Task.prototype, {
 		$.each(this.turnpoints, function (i, turnpoint) {
 			turnpoint.computePosition(waypoints);
 		});
+		for (var i = 0; i < this.turnpoints.length - 1; ++i) {
+			if (this.turnpoints[i].attributes.hasOwnProperty('ss') && this.turnpoints[i].name != this.turnpoints[i + 1].name) {
+				this.turnpoints[i].attributes.exit = true;
+				break;
+			}
+		}
 	}
 
 });
