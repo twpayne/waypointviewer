@@ -28,7 +28,7 @@ import waypoint
 class MainPage(webapp.RequestHandler):
 
     def get(self):
-        template_values = dict((key, self.request.get(key)) for key in ('kml', 'title', 'wpt'))
+        template_values = dict((key, self.request.get(key)) for key in ('kml', 'tsk', 'title', 'wpt'))
         path = os.path.join(os.path.dirname(__file__), 'templates', 'index.html')
         self.response.out.write(template.render(path, template_values))
 
@@ -36,7 +36,7 @@ class MainPage(webapp.RequestHandler):
 class WaypointviewerJs(webapp.RequestHandler):
 
     def get(self):
-        template_values = dict((key, self.request.get(key)) for key in ('kml', 'wpt'))
+        template_values = dict((key, self.request.get(key)) for key in ('kml', 'tsk', 'wpt'))
         path = os.path.join(os.path.dirname(__file__), 'templates', 'waypointviewer.js')
         self.response.headers['content-type'] = 'text/javascript'
         self.response.out.write(template.render(path, template_values))
