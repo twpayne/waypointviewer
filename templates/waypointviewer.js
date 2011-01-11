@@ -1,4 +1,5 @@
 var kml = '{{ kml|addslashes }}';
+var tsk = '{{ tsk|addslashes }}';
 var wpt = '{{ wpt|addslashes }}';
 
 function Waypoint(options) {
@@ -66,6 +67,103 @@ function Waypoint(options) {
 
 Waypoint.prototype = new google.maps.MVCObject();
 
+function Turnpoint() {
+	this.name = null;
+	this.attributes = {};
+	this.radius = 400;
+	this.errors = [];
+}
+
+$.extend(Turnpoint, {
+	ATTRIBUTES: {ss: true, es: true, gl: true}
+});
+
+$.extend(Turnpoint.prototype, {
+	parse: function (s) {
+		var self = this;
+		$.each(s.toLowerCase().split('.'), function (i, token) {
+			if (i == 0) {
+				self.name = token;
+			} else {
+				if (token in Turnpoint.ATTRIBUTES) {
+					self.attributes[token] = true;
+				} else if (token.match(/^r(\d+)(k?)$/)) {
+					self.radius = (RegExp.$2 ? 1000 : 1) * parseInt(RegExp.$1);
+				} else {
+					self.errors.push('Invalid token "' + token + '"');
+				}
+			}
+		});
+		return this;
+	}
+});
+
+function Task() {
+	this.name = null;
+	this.type = null;
+	this.wo = null;
+	this.wc = null;
+	this.so = null;
+	this.sl = null;
+	this.sc = null;
+	this.gc = null;
+	this.tc = null;
+	this.cs = null;
+	this.turnpoints = [];
+	this.errors = [];
+}
+
+$.extend(Task, {
+	BASE_TIME: {wc: 'wo', so: 'wo', sl: 'so', sc: 'so', gc: 'wo', tc: 'wo'},
+	TYPES: {race: true, open: true, elap: true, head: true}
+});
+
+$.extend(Task.prototype, {
+	parse: function (s) {
+		var self = this;
+		$.each(s.split(/\s+/), function (i, token) {
+			if (i == 0) {
+				token = token.toLowerCase();
+				if (token != 'tsk') {
+					self.errors.push('Invalid task header "' + token + '"');
+				}
+			} else if (i == 1) {
+				self.name = token;
+			} else if (i == 2) {
+				token = token.toLowerCase();
+				if (token in Task.TYPES) {
+					this.type = token;
+				} else {
+					self.errors.push('Invalid task type "' + token + '"');
+				}
+			} else {
+				token = token.toLowerCase();
+				/* FIXME handle cs */
+				if (token.match(/^(wo)(\d\d)(\d\d)$/)) {
+					self.wo = 60 * parseInt(RegExp.$2) + parseInt(RegExp.$3);
+				} else if (token.match(/^(wc|so|sl|sc|gc|tc)(\+)?(\d?\d)?(\d\d)$/)) {
+					self[RegExp.$1] = (RegExp.$2 ? self[Task.BASE_TIME[RegExp.$1]] : 0) + (RegExp.$3 ? 60 * parseInt(RegExp.$3) : 0) + parseInt(RegExp.$4);
+					if (RegExp.$2) {
+						var base_time = self[Task.BASE_TIME[RegExp.$1]];
+						if (base_time != null) {
+							self[RegExp.$1] += base_time;
+						} else {
+							self.errors.push('Cannot specify relative time "' + token + '" when "' + Task.BASE_TIME[RegExp.$1] + '" is not set');
+						}
+					}
+				} else {
+					var turnpoint = new Turnpoint().parse(token);
+					$.each(turnpoint.errors, function (j, error) {
+						self.errors.push(error);
+					});
+					self.turnpoints.push(turnpoint);
+				}
+			}
+		});
+		return this;
+	}
+});
+
 $(document).ready(function () {
 
 	var map = new google.maps.Map($('#map').get(0), {
@@ -75,33 +173,102 @@ $(document).ready(function () {
 
 	var bounds = new google.maps.LatLngBounds();
 
-	$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
-		$.each(geojson.features, function (i, feature) {
-			var options = {
-				color: 'ffff00',
-				description: '',
-				elevation: 0,
-				id: feature.properties.id,
-				map: map,
-				position: new google.maps.LatLng(
-					feature.geometry.coordinates[1],
-					feature.geometry.coordinates[0]
-				),
-				radius: 400
-			};
-			$.each(['color', 'description', 'radius'], function (j, property) {
-				if (feature.properties.hasOwnProperty(property)) {
-					options[property] = feature.properties[property];
+	if (tsk) {
+		var task = new Task().parse('tsk TASK race ' + tsk);
+		$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
+			var waypoints = [];
+			$.each(geojson.features, function (i, feature) {
+				var waypoint = {
+					description: '',
+					elevation: 0,
+					id: feature.properties.id,
+					position: new google.maps.LatLng(
+						feature.geometry.coordinates[1],
+						feature.geometry.coordinates[0]
+					),
+				};
+				if (feature.properties.hasOwnProperty('description')) {
+					waypoint.description = feature.properties.description;
+				}
+				if (feature.geometry.coordinates.length > 2) {
+					waypoint.elevation = feature.geometry.coordinates[2];
+				}
+				waypoints.push(waypoint);
+			});
+			var path = [];
+			$.each(task.turnpoints, function (i, turnpoint) {
+				var waypoint = null;
+				for (var j = 0; j < waypoints.length; ++j) {
+					if (waypoints[j].id.substr(0, turnpoint.name.length).toLowerCase() == turnpoint.name) {
+						waypoint = waypoints[j];
+						break;
+					}
+				}
+				if (waypoint) {
+					if (i != 0) {
+						var color = null;
+						if ('ss' in turnpoint.attributes) {
+							color = '#00ff00';
+						} else if ('es' in turnpoint.attributes) {
+							color = '#ff0000';
+						} else {
+							color = '#ffff00';
+						}
+						var circle = new google.maps.Circle({
+							center: waypoint.position,
+							fillColor: color,
+							fillOpacity: 0.1,
+							map: map,
+							radius: turnpoint.radius,
+							strokeColor: color,
+							strokeOpacity: 1,
+							strokeWeight: 1
+						});
+					}
+					path.push(waypoint.position);
+					bounds.extend(waypoint.position);
 				}
 			});
-			if (feature.geometry.coordinates.length > 2) {
-				options.elevation = feature.geometry.coordinates[2];
+			if (path.length > 0) {
+				var polyline = new google.maps.Polyline({
+					map: map,
+					path: path,
+					strokeColor: '#ffff00',
+					strokeOpacity: 1,
+					strokeWeight: 2
+				});
 			}
-			var waypoint = new Waypoint(options);
-			bounds.extend(options.position);
+			map.fitBounds(bounds);
 		});
-		map.fitBounds(bounds);
-	});
+	} else {
+		$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
+			$.each(geojson.features, function (i, feature) {
+				var options = {
+					color: 'ffff00',
+					description: '',
+					elevation: 0,
+					id: feature.properties.id,
+					map: map,
+					position: new google.maps.LatLng(
+						feature.geometry.coordinates[1],
+						feature.geometry.coordinates[0]
+					),
+					radius: 400
+				};
+				$.each(['color', 'description', 'radius'], function (j, property) {
+					if (feature.properties.hasOwnProperty(property)) {
+						options[property] = feature.properties[property];
+					}
+				});
+				if (feature.geometry.coordinates.length > 2) {
+					options.elevation = feature.geometry.coordinates[2];
+				}
+				var waypoint = new Waypoint(options);
+				bounds.extend(options.position);
+			});
+			map.fitBounds(bounds);
+		});
+	}
 
 	if (kml) {
 		var kmlLayer = new google.maps.KmlLayer(kml, {
