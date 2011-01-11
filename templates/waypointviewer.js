@@ -79,6 +79,7 @@ $.extend(Turnpoint, {
 });
 
 $.extend(Turnpoint.prototype, {
+
 	parse: function (s) {
 		var self = this;
 		$.each(s.toLowerCase().split('.'), function (i, token) {
@@ -96,6 +97,7 @@ $.extend(Turnpoint.prototype, {
 		});
 		return this;
 	}
+
 });
 
 function Task() {
@@ -119,6 +121,7 @@ $.extend(Task, {
 });
 
 $.extend(Task.prototype, {
+
 	parse: function (s) {
 		var self = this;
 		$.each(s.split(/\s+/), function (i, token) {
