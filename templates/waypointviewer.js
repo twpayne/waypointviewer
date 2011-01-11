@@ -269,7 +269,6 @@ $(document).ready(function () {
 				waypoints.push(waypoint);
 			});
 			task.computePositions(waypoints);
-			var path = [];
 			$.each(task.turnpoints, function (i, turnpoint) {
 				if (turnpoint.position) {
 					if (i != 0) {
@@ -292,19 +291,16 @@ $(document).ready(function () {
 							strokeWeight: 1
 						});
 					}
-					path.push(turnpoint.position);
 					bounds.extend(turnpoint.position);
 				}
 			});
-			if (path.length > 0) {
-				var polyline = new google.maps.Polyline({
-					map: map,
-					path: path,
-					strokeColor: '#ffff00',
-					strokeOpacity: 1,
-					strokeWeight: 2
-				});
-			}
+			var polyline = new google.maps.Polyline({
+				map: map,
+				path: task.computeShortestPath(),
+				strokeColor: '#ffff00',
+				strokeOpacity: 1,
+				strokeWeight: 2
+			});
 			map.fitBounds(bounds);
 		});
 	} else {
