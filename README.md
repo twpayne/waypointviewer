@@ -40,7 +40,10 @@ specificies the competition task.  This is simply a list of turnpoints
 separated by spaces (`+` or `%20` when URL encoded).  Each turnpoint can be
 followed by `.SS` (to indicate the start of the speed section), `.ES` (to
 indicate the end of the speed section), `.R400` (to set the radius in meters),
-and/or `.R10K (to set the radius in kilometers).
+and/or `.R10K` (to set the radius in kilometers).  For example:
+
+	D01+B10.SS.R5K+B10+B20+B30+A01.ES.R1K+A01
+
 
 Copyright
 ---------
