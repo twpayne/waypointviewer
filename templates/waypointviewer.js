@@ -185,6 +185,54 @@ $.extend(Task.prototype, {
 				break;
 			}
 		}
+	},
+
+	computeShortestPath: function () {
+		var R = 6371000;
+		var points = $.map(this.turnpoints, function (turnpoint, i) {
+			return {
+				center: turnpoint.position,
+				heading: 0,
+				include: true,
+				position: turnpoint.position,
+				radius: i == 0 || turnpoint.attributes.hasOwnProperty('gl') ? 0 : turnpoint.radius
+			};
+		});
+		$.each(points, function (i, point) {
+			if (i > 0) {
+				var previous = null;
+				for (var j = i - 1; j >= 0; --j) {
+					if (points[j].include) {
+						previous = points[j];
+						break;
+					}
+				}
+				if (google.maps.geometry.spherical.computeDistanceBetween(previous.center, point.center, R) < previous.radius) {
+					previous.include = false;
+				}
+			}
+		});
+		points = $.map(points, function (point, i) {
+			return point.include ? point : null;
+		});
+		for (var i = 1; i < points.length - 1; ++i) {
+			var point = points[i];
+			if (point.radius > 0) {
+				var heading1 = google.maps.geometry.spherical.computeHeading(point.position, points[i - 1].position);
+				var heading2 = google.maps.geometry.spherical.computeHeading(point.position, points[i + 1].position);
+				var heading = (heading1 + heading2) / 2 + (heading1 > heading2 ? 180 : 0);
+				point.position = google.maps.geometry.spherical.computeOffset(point.position, point.radius, heading, R);
+			}
+		}
+		if (points[points.length - 1].radius > 0) {
+			var point = points[points.length - 1];
+			var heading = google.maps.geometry.spherical.computeHeading(point.position, points[points.length - 2].position);
+			point.position = google.maps.geometry.spherical.computeOffset(point.position, point.radius, heading, R);
+		}
+		this.points = points;
+		return $.map(points, function (point, i) {
+			return point.include ? point.position : null;
+		});
 	}
 
 });
