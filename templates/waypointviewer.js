@@ -215,24 +215,40 @@ $.extend(Task.prototype, {
 		points = $.map(points, function (point, i) {
 			return point.include ? point : null;
 		});
-		for (var i = 1; i < points.length - 1; ++i) {
-			var point = points[i];
-			if (point.radius > 0) {
-				var heading1 = google.maps.geometry.spherical.computeHeading(point.position, points[i - 1].position);
-				var heading2 = google.maps.geometry.spherical.computeHeading(point.position, points[i + 1].position);
-				var heading = (heading1 + heading2) / 2 + (heading1 > heading2 ? 180 : 0);
-				point.position = google.maps.geometry.spherical.computeOffset(point.position, point.radius, heading, R);
+		var bestPath = null;
+		var bestLength = null;
+		while (true) {
+			for (var i = 1; i < points.length - 1; ++i) {
+				var point = points[i];
+				if (point.radius > 0) {
+					var heading1 = google.maps.geometry.spherical.computeHeading(point.position, points[i - 1].position);
+					var heading2 = google.maps.geometry.spherical.computeHeading(point.position, points[i + 1].position);
+					var heading = (heading1 + heading2) / 2 + (heading1 > heading2 ? 180 : 0);
+					point.position = google.maps.geometry.spherical.computeOffset(point.center, point.radius, heading, R);
+				}
+			}
+			if (points[points.length - 1].radius > 0) {
+				var point = points[points.length - 1];
+				var heading = google.maps.geometry.spherical.computeHeading(point.position, points[points.length - 2].position);
+				point.position = google.maps.geometry.spherical.computeOffset(point.center, point.radius, heading, R);
+			}
+			var path = $.map(points, function (point, i) {
+				return point.include ? point.position : null;
+			});
+			var length = google.maps.geometry.spherical.computeLength(path);
+			if (bestLength) {
+				if (length < bestLength) {
+					bestLength = length;
+					bestPath = path;
+				} else {
+					break;
+				}
+			} else {
+				bestLength = length;
+				bestPath = path;
 			}
 		}
-		if (points[points.length - 1].radius > 0) {
-			var point = points[points.length - 1];
-			var heading = google.maps.geometry.spherical.computeHeading(point.position, points[points.length - 2].position);
-			point.position = google.maps.geometry.spherical.computeOffset(point.position, point.radius, heading, R);
-		}
-		this.points = points;
-		return $.map(points, function (point, i) {
-			return point.include ? point.position : null;
-		});
+		return bestPath;
 	}
 
 });
