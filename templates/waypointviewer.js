@@ -161,7 +161,20 @@ $.extend(Task.prototype, {
 			}
 		});
 		return this;
+	},
+
+	computePositions: function (waypoints) {
+		$.each(this.turnpoints, function (i, turnpoint) {
+			var waypoint = null;
+			for (var j = 0; j < waypoints.length; ++j) {
+				if (waypoints[j].id.substr(0, turnpoint.name.length).toLowerCase() == turnpoint.name) {
+					turnpoint.position = waypoints[j].position;
+					break;
+				}
+			}
+		});
 	}
+
 });
 
 $(document).ready(function () {
@@ -195,16 +208,10 @@ $(document).ready(function () {
 				}
 				waypoints.push(waypoint);
 			});
+			task.computePositions(waypoints);
 			var path = [];
 			$.each(task.turnpoints, function (i, turnpoint) {
-				var waypoint = null;
-				for (var j = 0; j < waypoints.length; ++j) {
-					if (waypoints[j].id.substr(0, turnpoint.name.length).toLowerCase() == turnpoint.name) {
-						waypoint = waypoints[j];
-						break;
-					}
-				}
-				if (waypoint) {
+				if (turnpoint.position) {
 					if (i != 0) {
 						var color = null;
 						if ('ss' in turnpoint.attributes) {
@@ -215,7 +222,7 @@ $(document).ready(function () {
 							color = '#ffff00';
 						}
 						var circle = new google.maps.Circle({
-							center: waypoint.position,
+							center: turnpoint.position,
 							fillColor: color,
 							fillOpacity: 0.1,
 							map: map,
@@ -225,8 +232,8 @@ $(document).ready(function () {
 							strokeWeight: 1
 						});
 					}
-					path.push(waypoint.position);
-					bounds.extend(waypoint.position);
+					path.push(turnpoint.position);
+					bounds.extend(turnpoint.position);
 				}
 			});
 			if (path.length > 0) {
