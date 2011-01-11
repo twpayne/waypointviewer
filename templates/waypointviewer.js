@@ -1,4 +1,5 @@
 var kml = '{{ kml|addslashes }}';
+var tsk = '{{ tsk|addslashes }}';
 var wpt = '{{ wpt|addslashes }}';
 
 function Waypoint(options) {
@@ -172,33 +173,102 @@ $(document).ready(function () {
 
 	var bounds = new google.maps.LatLngBounds();
 
-	$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
-		$.each(geojson.features, function (i, feature) {
-			var options = {
-				color: 'ffff00',
-				description: '',
-				elevation: 0,
-				id: feature.properties.id,
-				map: map,
-				position: new google.maps.LatLng(
-					feature.geometry.coordinates[1],
-					feature.geometry.coordinates[0]
-				),
-				radius: 400
-			};
-			$.each(['color', 'description', 'radius'], function (j, property) {
-				if (feature.properties.hasOwnProperty(property)) {
-					options[property] = feature.properties[property];
+	if (tsk) {
+		var task = new Task().parse('tsk TASK race ' + tsk);
+		$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
+			var waypoints = [];
+			$.each(geojson.features, function (i, feature) {
+				var waypoint = {
+					description: '',
+					elevation: 0,
+					id: feature.properties.id,
+					position: new google.maps.LatLng(
+						feature.geometry.coordinates[1],
+						feature.geometry.coordinates[0]
+					),
+				};
+				if (feature.properties.hasOwnProperty('description')) {
+					waypoint.description = feature.properties.description;
+				}
+				if (feature.geometry.coordinates.length > 2) {
+					waypoint.elevation = feature.geometry.coordinates[2];
+				}
+				waypoints.push(waypoint);
+			});
+			var path = [];
+			$.each(task.turnpoints, function (i, turnpoint) {
+				var waypoint = null;
+				for (var j = 0; j < waypoints.length; ++j) {
+					if (waypoints[j].id.substr(0, turnpoint.name.length).toLowerCase() == turnpoint.name) {
+						waypoint = waypoints[j];
+						break;
+					}
+				}
+				if (waypoint) {
+					if (i != 0) {
+						var color = null;
+						if ('ss' in turnpoint.attributes) {
+							color = '#00ff00';
+						} else if ('es' in turnpoint.attributes) {
+							color = '#ff0000';
+						} else {
+							color = '#ffff00';
+						}
+						var circle = new google.maps.Circle({
+							center: waypoint.position,
+							fillColor: color,
+							fillOpacity: 0.1,
+							map: map,
+							radius: turnpoint.radius,
+							strokeColor: color,
+							strokeOpacity: 1,
+							strokeWeight: 1
+						});
+					}
+					path.push(waypoint.position);
+					bounds.extend(waypoint.position);
 				}
 			});
-			if (feature.geometry.coordinates.length > 2) {
-				options.elevation = feature.geometry.coordinates[2];
+			if (path.length > 0) {
+				var polyline = new google.maps.Polyline({
+					map: map,
+					path: path,
+					strokeColor: '#ffff00',
+					strokeOpacity: 1,
+					strokeWeight: 2
+				});
 			}
-			var waypoint = new Waypoint(options);
-			bounds.extend(options.position);
+			map.fitBounds(bounds);
 		});
-		map.fitBounds(bounds);
-	});
+	} else {
+		$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
+			$.each(geojson.features, function (i, feature) {
+				var options = {
+					color: 'ffff00',
+					description: '',
+					elevation: 0,
+					id: feature.properties.id,
+					map: map,
+					position: new google.maps.LatLng(
+						feature.geometry.coordinates[1],
+						feature.geometry.coordinates[0]
+					),
+					radius: 400
+				};
+				$.each(['color', 'description', 'radius'], function (j, property) {
+					if (feature.properties.hasOwnProperty(property)) {
+						options[property] = feature.properties[property];
+					}
+				});
+				if (feature.geometry.coordinates.length > 2) {
+					options.elevation = feature.geometry.coordinates[2];
+				}
+				var waypoint = new Waypoint(options);
+				bounds.extend(options.position);
+			});
+			map.fitBounds(bounds);
+		});
+	}
 
 	if (kml) {
 		var kmlLayer = new google.maps.KmlLayer(kml, {
