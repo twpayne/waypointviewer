@@ -1,3 +1,4 @@
+var R = 6371000;
 var kml = '{{ kml|addslashes }}';
 var tsk = '{{ tsk|addslashes }}';
 var wpt = '{{ wpt|addslashes }}';
@@ -188,7 +189,6 @@ $.extend(Task.prototype, {
 	},
 
 	computeShortestPath: function () {
-		var R = 6371000;
 		var points = $.map(this.turnpoints, function (turnpoint, i) {
 			return {
 				center: turnpoint.position,
