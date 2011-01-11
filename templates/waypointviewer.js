@@ -269,9 +269,15 @@ $(document).ready(function () {
 				waypoints.push(waypoint);
 			});
 			task.computePositions(waypoints);
+			var positions = [];
 			$.each(task.turnpoints, function (i, turnpoint) {
 				if (turnpoint.position) {
-					if (i != 0) {
+					if (i == 0) {
+						positions.push(turnpoint.position);
+					} else {
+						if (turnpoint.position != positions[positions.length - 1]) {
+							positions.push(turnpoint.position);
+						}
 						var color = null;
 						if (turnpoint.attributes.hasOwnProperty('ss')) {
 							color = '#00ff00';
@@ -280,16 +286,30 @@ $(document).ready(function () {
 						} else {
 							color = '#ffff00';
 						}
-						var circle = new google.maps.Circle({
-							center: turnpoint.position,
-							fillColor: color,
-							fillOpacity: 0.1,
-							map: map,
-							radius: turnpoint.radius,
-							strokeColor: color,
-							strokeOpacity: 1,
-							strokeWeight: 1
-						});
+						if (turnpoint.attributes.hasOwnProperty('gl')) {
+							var heading = google.maps.geometry.spherical.computeHeading(turnpoint.position, positions[positions.length - 2]);
+							var polyline = new google.maps.Polyline({
+								map: map,
+								path: [
+									google.maps.geometry.spherical.computeOffset(turnpoint.position, turnpoint.radius, heading - 90, R),
+									google.maps.geometry.spherical.computeOffset(turnpoint.position, turnpoint.radius, heading + 90, R)
+								],
+								strokeColor: color,
+								strokeOpacity: 1,
+								strokeWeight: 2
+							});
+						} else {
+							var circle = new google.maps.Circle({
+								center: turnpoint.position,
+								fillColor: color,
+								fillOpacity: 0.1,
+								map: map,
+								radius: turnpoint.radius,
+								strokeColor: color,
+								strokeOpacity: 1,
+								strokeWeight: 1
+							});
+						}
 					}
 					bounds.extend(turnpoint.position);
 				}
