@@ -96,6 +96,15 @@ $.extend(Turnpoint.prototype, {
 			}
 		});
 		return this;
+	},
+
+	computePosition: function (waypoints) {
+		for (var j = 0; j < waypoints.length; ++j) {
+			if (waypoints[j].id.substr(0, this.name.length).toLowerCase() == this.name) {
+				this.position = waypoints[j].position;
+				break;
+			}
+		}
 	}
 
 });
@@ -168,13 +177,7 @@ $.extend(Task.prototype, {
 
 	computePositions: function (waypoints) {
 		$.each(this.turnpoints, function (i, turnpoint) {
-			var waypoint = null;
-			for (var j = 0; j < waypoints.length; ++j) {
-				if (waypoints[j].id.substr(0, turnpoint.name.length).toLowerCase() == turnpoint.name) {
-					turnpoint.position = waypoints[j].position;
-					break;
-				}
-			}
+			turnpoint.computePosition(waypoints);
 		});
 	}
 
