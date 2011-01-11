@@ -66,6 +66,103 @@ function Waypoint(options) {
 
 Waypoint.prototype = new google.maps.MVCObject();
 
+function Turnpoint() {
+	this.name = null;
+	this.attributes = {};
+	this.radius = 400;
+	this.errors = [];
+}
+
+$.extend(Turnpoint, {
+	ATTRIBUTES: {ss: true, es: true, gl: true}
+});
+
+$.extend(Turnpoint.prototype, {
+	parse: function (s) {
+		var self = this;
+		$.each(s.toLowerCase().split('.'), function (i, token) {
+			if (i == 0) {
+				self.name = token;
+			} else {
+				if (token in Turnpoint.ATTRIBUTES) {
+					self.attributes[token] = true;
+				} else if (token.match(/^r(\d+)(k?)$/)) {
+					self.radius = (RegExp.$2 ? 1000 : 1) * parseInt(RegExp.$1);
+				} else {
+					self.errors.push('Invalid token "' + token + '"');
+				}
+			}
+		});
+		return this;
+	}
+});
+
+function Task() {
+	this.name = null;
+	this.type = null;
+	this.wo = null;
+	this.wc = null;
+	this.so = null;
+	this.sl = null;
+	this.sc = null;
+	this.gc = null;
+	this.tc = null;
+	this.cs = null;
+	this.turnpoints = [];
+	this.errors = [];
+}
+
+$.extend(Task, {
+	BASE_TIME: {wc: 'wo', so: 'wo', sl: 'so', sc: 'so', gc: 'wo', tc: 'wo'},
+	TYPES: {race: true, open: true, elap: true, head: true}
+});
+
+$.extend(Task.prototype, {
+	parse: function (s) {
+		var self = this;
+		$.each(s.split(/\s+/), function (i, token) {
+			if (i == 0) {
+				token = token.toLowerCase();
+				if (token != 'tsk') {
+					self.errors.push('Invalid task header "' + token + '"');
+				}
+			} else if (i == 1) {
+				self.name = token;
+			} else if (i == 2) {
+				token = token.toLowerCase();
+				if (token in Task.TYPES) {
+					this.type = token;
+				} else {
+					self.errors.push('Invalid task type "' + token + '"');
+				}
+			} else {
+				token = token.toLowerCase();
+				/* FIXME handle cs */
+				if (token.match(/^(wo)(\d\d)(\d\d)$/)) {
+					self.wo = 60 * parseInt(RegExp.$2) + parseInt(RegExp.$3);
+				} else if (token.match(/^(wc|so|sl|sc|gc|tc)(\+)?(\d?\d)?(\d\d)$/)) {
+					self[RegExp.$1] = (RegExp.$2 ? self[Task.BASE_TIME[RegExp.$1]] : 0) + (RegExp.$3 ? 60 * parseInt(RegExp.$3) : 0) + parseInt(RegExp.$4);
+					if (RegExp.$2) {
+						var base_time = self[Task.BASE_TIME[RegExp.$1]];
+						if (base_time != null) {
+							self[RegExp.$1] += base_time;
+						} else {
+							self.errors.push('Cannot specify relative time "' + token + '" when "' + Task.BASE_TIME[RegExp.$1] + '" is not set');
+						}
+					}
+				} else {
+					var turnpoint = new Turnpoint().parse(token);
+					$.each(turnpoint.errors, function (j, error) {
+						self.errors.push(error);
+					});
+					self.turnpoints.push(turnpoint);
+				}
+			}
+		});
+		return this;
+	}
+});
+
 $(document).ready(function () {
 
 	var map = new google.maps.Map($('#map').get(0), {
