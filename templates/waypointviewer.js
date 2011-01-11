@@ -236,16 +236,16 @@ $.extend(Task.prototype, {
 				return point.include ? point.position : null;
 			});
 			var length = google.maps.geometry.spherical.computeLength(path);
-			if (bestLength) {
+			if (bestPath) {
 				if (length < bestLength) {
-					bestLength = length;
 					bestPath = path;
+					bestLength = length;
 				} else {
 					break;
 				}
 			} else {
-				bestLength = length;
 				bestPath = path;
+				bestLength = length;
 			}
 		}
 		return bestPath;
