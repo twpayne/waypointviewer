@@ -86,7 +86,7 @@ $.extend(Turnpoint.prototype, {
 			if (i == 0) {
 				self.name = token;
 			} else {
-				if (token in Turnpoint.ATTRIBUTES) {
+				if (Turnpoint.ATTRIBUTES.hasOwnProperty(token)) {
 					self.attributes[token] = true;
 				} else if (token.match(/^r(\d+)(k?)$/)) {
 					self.radius = (RegExp.$2 ? 1000 : 1) * parseInt(RegExp.$1);
@@ -143,7 +143,7 @@ $.extend(Task.prototype, {
 				self.name = token;
 			} else if (i == 2) {
 				token = token.toLowerCase();
-				if (token in Task.TYPES) {
+				if (Task.TYPES.hasOwnProperty(token)) {
 					this.type = token;
 				} else {
 					self.errors.push('Invalid task type "' + token + '"');
@@ -226,9 +226,9 @@ $(document).ready(function () {
 				if (turnpoint.position) {
 					if (i != 0) {
 						var color = null;
-						if ('ss' in turnpoint.attributes) {
+						if (turnpoint.attributes.hasOwnProperty('ss')) {
 							color = '#00ff00';
-						} else if ('es' in turnpoint.attributes) {
+						} else if (turnpoint.attributes.hasOwnProperty('es')) {
 							color = '#ff0000';
 						} else {
 							color = '#ffff00';
