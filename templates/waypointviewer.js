@@ -223,7 +223,7 @@ $.extend(Task.prototype, {
 				if (point.radius > 0) {
 					var heading1 = google.maps.geometry.spherical.computeHeading(point.position, points[i - 1].position);
 					var heading2 = google.maps.geometry.spherical.computeHeading(point.position, points[i + 1].position);
-					var heading = (heading1 + heading2) / 2 + (heading1 > heading2 ? 180 : 0);
+					var heading = (heading1 + heading2) / 2 + (Math.abs(heading1 - heading2) > 180 ? 360 : 0);
 					point.position = google.maps.geometry.spherical.computeOffset(point.center, point.radius, heading, R);
 				}
 			}
