@@ -1,3 +1,9 @@
+body {
+	border-width: 0px;
+	padding: 0px;
+	margin: 0px;
+}
+
 .buttonOuter {
 	border-color: black;
 	border-style: solid;
