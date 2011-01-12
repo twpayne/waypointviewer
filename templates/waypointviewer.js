@@ -3,6 +3,22 @@ var kml = '{{ kml|addslashes }}';
 var tsk = '{{ tsk|addslashes }}';
 var wpt = '{{ wpt|addslashes }}';
 
+/* http://www.movable-type.co.uk/scripts/latlong.html */
+function computeCrossTrackDistance(from, to, point, radius) {
+	radius = radius || 6378137;
+	var d13 = google.maps.geometry.spherical.computeDistanceBetween(from, point, radius);
+	var theta12 = google.maps.geometry.spherical.computeHeading(from, to);
+	var theta13 = google.maps.geometry.spherical.computeHeading(from, point);
+	return radius * Math.asin(Math.sin(d13 / radius) * Math.sin(Math.PI * (theta13 - theta12) / 180));
+}
+
+function computeAlongTrackDistance(from, to, point, radius) {
+	radius = radius || 6378137;
+	var d13 = google.maps.geometry.spherical.computeDistanceBetween(from, point, radius);
+	var dxt = computeCrossTrackDistance(from, to, point, radius);
+	return radius * Math.acos(Math.cos(d13 / radius) / Math.cos(dxt / radius));
+}
+
 function Waypoint(options) {
 
 	var self = this;
