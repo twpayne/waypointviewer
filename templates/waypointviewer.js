@@ -118,6 +118,8 @@ $.extend(Turnpoint.prototype, {
 	computePosition: function (waypoints) {
 		for (var j = 0; j < waypoints.length; ++j) {
 			if (waypoints[j].id.substr(0, this.name.length).toLowerCase() == this.name) {
+				this.id = waypoints[j].id;
+				this.description = waypoints[j].description;
 				this.position = waypoints[j].position;
 				break;
 			}
