@@ -118,6 +118,8 @@ $.extend(Turnpoint.prototype, {
 	computePosition: function (waypoints) {
 		for (var j = 0; j < waypoints.length; ++j) {
 			if (waypoints[j].id.substr(0, this.name.length).toLowerCase() == this.name) {
+				this.id = waypoints[j].id;
+				this.description = waypoints[j].description;
 				this.position = waypoints[j].position;
 				break;
 			}
@@ -143,7 +145,7 @@ function Task() {
 
 $.extend(Task, {
 	BASE_TIME: {wc: 'wo', so: 'wo', sl: 'so', sc: 'so', gc: 'wo', tc: 'wo'},
-	TYPES: {race: true, open: true, elap: true, head: true}
+	TYPES: {race: 'race to goal', open: 'open distance', elap: 'elapsed time', head: 'headed open distance'}
 });
 
 $.extend(Task.prototype, {
@@ -161,7 +163,7 @@ $.extend(Task.prototype, {
 			} else if (i == 2) {
 				token = token.toLowerCase();
 				if (Task.TYPES.hasOwnProperty(token)) {
-					this.type = token;
+					that.type = token;
 				} else {
 					that.errors.push('Invalid task type "' + token + '"');
 				}
@@ -272,6 +274,12 @@ $.extend(Task.prototype, {
 			}
 		}
 		return bestPath;
+	},
+
+	getPath: function () {
+		return $.map(this.turnpoints, function (turnpoint, i) {
+			return turnpoint.position;
+		});
 	}
 
 });
@@ -356,14 +364,48 @@ $(document).ready(function () {
 				}
 				bounds.extend(turnpoint.position);
 			});
+			var shortestPath = task.computeShortestPath();
 			var polyline = new google.maps.Polyline({
 				map: map,
-				path: task.computeShortestPath(),
+				path: shortestPath,
 				strokeColor: '#ffff00',
 				strokeOpacity: 1,
 				strokeWeight: 2
 			});
 			map.fitBounds(bounds);
+			var taskBoard = $('#taskBoard');
+			$('#distance', taskBoard).html((google.maps.geometry.spherical.computeLength(task.getPath()) / 1000).toFixed(1) + 'km');
+			$('#shortestDistance', taskBoard).html((google.maps.geometry.spherical.computeLength(shortestPath) / 1000).toFixed(1) + 'km');
+			$('#type', taskBoard).html(Task.TYPES[task.type]);
+			var count = 1;
+			$.each(task.turnpoints, function (i, turnpoint) {
+				var turnpointRow = $('#turnpointRow', taskBoard).clone().attr({id: null}).show();
+				var index;
+				if (i == 0) {
+					index = 'TO';
+				} else if (i == task.turnpoints.length - 1) {
+					index = 'GOAL';
+					++count;
+				} else if (turnpoint.attributes.hasOwnProperty('ss')) {
+					index = 'SS' + (turnpoint.attributes.hasOwnProperty('exit') ? ' (EXIT)' : '');
+				} else if (turnpoint.attributes.hasOwnProperty('es')) {
+					index = 'ES';
+					++count;
+				} else {
+					index = count;
+					++count;
+				}
+				$('#turnpointIndex', turnpointRow).html(index);
+				$('#turnpointId', turnpointRow).html(turnpoint.id);
+				$('#turnpointDescription', turnpointRow).html(turnpoint.description);
+				if (turnpoint.radius > 0) {
+					$('#turnpointRadius', turnpointRow).html(turnpoint.radius);
+				}
+				$('#turnpointRow', taskBoard).before(turnpointRow);
+			});
+			var infoWindow = new google.maps.InfoWindow({content: taskBoard.show().get(0), position: task.turnpoints[0].position});
+			var taskBoardButton = $('#taskBoardButton').click(function () { infoWindow.open(map); }).show();
+			map.controls[google.maps.ControlPosition.TOP_CENTER].push(taskBoardButton.get(0));
 		});
 	} else {
 		$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
