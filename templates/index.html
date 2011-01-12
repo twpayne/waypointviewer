@@ -51,6 +51,12 @@
 				</tr>
 			</table>
 		</div>
+		<div id="taskBoard" class="taskBoard" style="display: none">
+{% if title %}
+			<h1>{{ title|escape }}</h1>
+{% endif %}
+			<h2><span id="distance"></span>km <span id="type"></span></h2>
+		</div>
 	</body>
 </html>
 {% else %}

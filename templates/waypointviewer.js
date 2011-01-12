@@ -370,7 +370,11 @@ $(document).ready(function () {
 				strokeWeight: 2
 			});
 			map.fitBounds(bounds);
-			var taskBoardButton = $('#taskBoardButton').show();
+			var taskBoard = $('#taskBoard');
+			$('#distance', taskBoard).html((google.maps.geometry.spherical.computeLength(task.getPath()) / 1000).toFixed(1));
+			$('#type', taskBoard).html(Task.TYPES[task.type]);
+			var infoWindow = new google.maps.InfoWindow({content: taskBoard.show().get(0), position: task.turnpoints[0].position});
+			var taskBoardButton = $('#taskBoardButton').click(function () { infoWindow.open(map); }).show();
 			map.controls[google.maps.ControlPosition.TOP_CENTER].push(taskBoardButton.get(0));
 		});
 	} else {
