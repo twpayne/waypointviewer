@@ -237,10 +237,17 @@ $.extend(Task.prototype, {
 			for (var i = 1; i < points.length - 1; ++i) {
 				var point = points[i];
 				if (point.radius > 0) {
-					var heading1 = google.maps.geometry.spherical.computeHeading(point.position, points[i - 1].position);
-					var heading2 = google.maps.geometry.spherical.computeHeading(point.position, points[i + 1].position);
-					var heading = (heading1 + heading2) / 2 + (Math.abs(heading1 - heading2) > 180 ? 180 : 0);
-					point.position = google.maps.geometry.spherical.computeOffset(point.center, point.radius, heading, R);
+					var crossTrackDistance = computeCrossTrackDistance(points[i - 1].position, points[i + 1].position, point.center, R);
+					if (Math.abs(crossTrackDistance) < point.radius) {
+						var alongTrackDistance = computeAlongTrackDistance(points[i - 1].position, points[i + 1].position, point.center, R);
+						var heading = google.maps.geometry.spherical.computeHeading(points[i - 1].position, points[i + 1].position);
+						point.position = google.maps.geometry.spherical.computeOffset(points[i - 1].position, alongTrackDistance, heading, R);
+					} else {
+						var heading1 = google.maps.geometry.spherical.computeHeading(point.position, points[i - 1].position);
+						var heading2 = google.maps.geometry.spherical.computeHeading(point.position, points[i + 1].position);
+						var heading = (heading1 + heading2) / 2 + (Math.abs(heading1 - heading2) > 180 ? 180 : 0);
+						point.position = google.maps.geometry.spherical.computeOffset(point.center, point.radius, heading, R);
+					}
 				}
 			}
 			if (points[points.length - 1].radius > 0) {
