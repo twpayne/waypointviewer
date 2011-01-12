@@ -364,6 +364,8 @@ $(document).ready(function () {
 				strokeWeight: 2
 			});
 			map.fitBounds(bounds);
+			var taskBoardButton = $('#taskBoardButton').show();
+			map.controls[google.maps.ControlPosition.TOP_CENTER].push(taskBoardButton.get(0));
 		});
 	} else {
 		$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
