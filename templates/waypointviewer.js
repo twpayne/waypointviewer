@@ -283,6 +283,11 @@ $(document).ready(function () {
 		mapTypeId: google.maps.MapTypeId.TERRAIN
 	});
 
+	if (top.location != self.location) {
+		var fullScreen = $('#fullScreen').click(function () { top.location = self.location.href; }).show();
+		map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(fullScreen.get(0));
+	}
+
 	var bounds = new google.maps.LatLngBounds();
 
 	if (tsk) {

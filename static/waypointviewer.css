@@ -1,3 +1,29 @@
+.buttonOuter {
+	border-color: black;
+	border-style: solid;
+	border-width: 1px;
+	cursor: pointer;
+	float: left;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	position: relative;
+}
+
+.buttonInner {
+	background-color: white;
+	border-bottom-color: rgb(112, 112, 112);
+	border-left-color: rgb(208, 208, 208);
+	border-right-color: rgb(112, 112, 112);
+	border-style: solid;
+	border-top-color: rgb(208, 208, 208);
+	border-width: 1px;
+	color: black;
+	font-family: Arial, sans-serif;
+	font-size: 12px;
+	text-align: center;
+	-webkit-user-select: none;
+}
+
 .infoWindow table {
 	font-family: verdana, sans-serif;
 	font-size: 7pt;
