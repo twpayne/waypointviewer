@@ -161,7 +161,7 @@ $.extend(Task.prototype, {
 			} else if (i == 2) {
 				token = token.toLowerCase();
 				if (Task.TYPES.hasOwnProperty(token)) {
-					this.type = token;
+					that.type = token;
 				} else {
 					that.errors.push('Invalid task type "' + token + '"');
 				}
