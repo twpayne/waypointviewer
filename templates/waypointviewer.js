@@ -21,7 +21,7 @@ function computeAlongTrackDistance(from, to, point, radius) {
 
 function Waypoint(options) {
 
-	var self = this;
+	var that = this;
 
 	this.set('id', options.id);
 	this.set('position', options.position);
@@ -72,12 +72,12 @@ function Waypoint(options) {
 	this.set('infoWindow', infoWindow);
 
 	google.maps.event.addListener(marker, 'click', function () {
-		self.get('infoWindow').open(self.get('map'), self.get('marker'));
+		that.get('infoWindow').open(that.get('map'), that.get('marker'));
 	});
 
 	google.maps.event.addListener(marker, 'dblclick', function () {
-		self.get('map').panTo(self.get('position'));
-		self.get('map').setZoom(15);
+		that.get('map').panTo(that.get('position'));
+		that.get('map').setZoom(15);
 	});
 
 }
@@ -98,17 +98,17 @@ $.extend(Turnpoint, {
 $.extend(Turnpoint.prototype, {
 
 	parse: function (s) {
-		var self = this;
+		var that = this;
 		$.each(s.toLowerCase().split('.'), function (i, token) {
 			if (i == 0) {
-				self.name = token;
+				that.name = token;
 			} else {
 				if (Turnpoint.ATTRIBUTES.hasOwnProperty(token)) {
-					self.attributes[token] = true;
+					that.attributes[token] = true;
 				} else if (token.match(/^r(\d+)(k?)$/)) {
-					self.radius = (RegExp.$2 ? 1000 : 1) * parseInt(RegExp.$1);
+					that.radius = (RegExp.$2 ? 1000 : 1) * parseInt(RegExp.$1);
 				} else {
-					self.errors.push('Invalid token "' + token + '"');
+					that.errors.push('Invalid token "' + token + '"');
 				}
 			}
 		});
@@ -149,43 +149,43 @@ $.extend(Task, {
 $.extend(Task.prototype, {
 
 	parse: function (s) {
-		var self = this;
+		var that = this;
 		$.each(s.split(/\s+/), function (i, token) {
 			if (i == 0) {
 				token = token.toLowerCase();
 				if (token != 'tsk') {
-					self.errors.push('Invalid task header "' + token + '"');
+					that.errors.push('Invalid task header "' + token + '"');
 				}
 			} else if (i == 1) {
-				self.name = token;
+				that.name = token;
 			} else if (i == 2) {
 				token = token.toLowerCase();
 				if (Task.TYPES.hasOwnProperty(token)) {
 					this.type = token;
 				} else {
-					self.errors.push('Invalid task type "' + token + '"');
+					that.errors.push('Invalid task type "' + token + '"');
 				}
 			} else {
 				token = token.toLowerCase();
 				/* FIXME handle cs */
 				if (token.match(/^(wo)(\d\d)(\d\d)$/)) {
-					self.wo = 60 * parseInt(RegExp.$2) + parseInt(RegExp.$3);
+					that.wo = 60 * parseInt(RegExp.$2) + parseInt(RegExp.$3);
 				} else if (token.match(/^(wc|so|sl|sc|gc|tc)(\+)?(\d?\d)?(\d\d)$/)) {
-					self[RegExp.$1] = (RegExp.$2 ? self[Task.BASE_TIME[RegExp.$1]] : 0) + (RegExp.$3 ? 60 * parseInt(RegExp.$3) : 0) + parseInt(RegExp.$4);
+					that[RegExp.$1] = (RegExp.$2 ? that[Task.BASE_TIME[RegExp.$1]] : 0) + (RegExp.$3 ? 60 * parseInt(RegExp.$3) : 0) + parseInt(RegExp.$4);
 					if (RegExp.$2) {
-						var base_time = self[Task.BASE_TIME[RegExp.$1]];
+						var base_time = that[Task.BASE_TIME[RegExp.$1]];
 						if (base_time != null) {
-							self[RegExp.$1] += base_time;
+							that[RegExp.$1] += base_time;
 						} else {
-							self.errors.push('Cannot specify relative time "' + token + '" when "' + Task.BASE_TIME[RegExp.$1] + '" is not set');
+							that.errors.push('Cannot specify relative time "' + token + '" when "' + Task.BASE_TIME[RegExp.$1] + '" is not set');
 						}
 					}
 				} else {
 					var turnpoint = new Turnpoint().parse(token);
 					$.each(turnpoint.errors, function (j, error) {
-						self.errors.push(error);
+						that.errors.push(error);
 					});
-					self.turnpoints.push(turnpoint);
+					that.turnpoints.push(turnpoint);
 				}
 			}
 		});
