@@ -272,6 +272,12 @@ $.extend(Task.prototype, {
 			}
 		}
 		return bestPath;
+	},
+
+	getPath: function () {
+		return $.map(this.turnpoints, function (turnpoint, i) {
+			return turnpoint.position;
+		});
 	}
 
 });
