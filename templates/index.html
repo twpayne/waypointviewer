@@ -52,10 +52,51 @@
 			</table>
 		</div>
 		<div id="taskBoard" class="taskBoard" style="display: none">
-{% if title %}
-			<h1>{{ title|escape }}</h1>
-{% endif %}
-			<h2><span id="distance"></span>km <span id="type"></span></h2>
+			<table>
+				<tbody>
+	{% if title %}
+					<tr>
+						<td colspan="5">{{ title|escape }}</td>
+					</tr>
+	{% endif %}
+					<tr>
+						<th>Task Type:</th>
+						<td id="type"></td>
+					</tr>
+					<tr>
+						<th>Window Open:</th>
+						<td id="wo"></td>
+						<th>Window Close:</th>
+						<td id="wc"></td>
+					</tr>
+					<tr>
+						<th>Start:</th>
+						<td id="so"></td>
+						<th>Task Deadline:</th>
+						<td id="tc"></td>
+					</tr>
+					<tr>
+						<th>Point</th>
+						<th>Name</th>
+						<th>Description</th>
+						<th>Radius</th>
+						<th>Distance</th>
+					</tr>
+					<tr id="turnpointRow" style="display: none;">
+						<td><span id="turnpointIndex"></span></td>
+						<td><span id="turnpointId"></span></td>
+						<td><span id="turnpointDescription"></span></td>
+						<td><span id="turnpointRadius"></span></td>
+						<td><span id="turnpointDistance"></span></td>
+					</tr>
+					<tr>
+						<th>GPS Distance:</th>
+						<td><span id="distance"></span></td>
+						<th>Task Distance:</th>
+						<td><span id="shortestDistance"></span></td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</body>
 </html>
