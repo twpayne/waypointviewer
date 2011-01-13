@@ -111,8 +111,9 @@ $.extend(Turnpoint, {
 $.extend(Turnpoint.prototype, {
 
 	parse: function (s, waypoints) {
-		var j, that = this;
+		var that = this;
 		$.each(s.toLowerCase().split('.'), function (i, token) {
+			var j;
 			if (i === 0) {
 				for (j = 0; j < waypoints.length; j += 1) {
 					if (waypoints[j].id.substr(0, token.length).toLowerCase() === token) {
