@@ -273,8 +273,8 @@ $.extend(Task.prototype, {
 				}
 			}
 			if (points[points.length - 1].radius > 0) {
-				heading = computeHeading(path[points.length - 1].position, path[points.length - 2]);
-				path[points.length - 1] = computeOffset(points[length - 1].center, points[length - 1].radius, heading, R);
+				heading = computeHeading(path[points.length - 1], path[points.length - 2]);
+				path[points.length - 1] = computeOffset(points[points.length - 1].center, points[points.length - 1].radius, heading, R);
 			}
 			length = computeLength(path);
 			if (this.shortestPathLength) {
