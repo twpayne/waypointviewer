@@ -105,7 +105,7 @@ $.extend(Turnpoint.prototype, {
 	parse: function (s, waypoints) {
 		var that = this;
 		$.each(s.toLowerCase().split('.'), function (i, token) {
-			if (i == 0) {
+			if (i === 0) {
 				that.name = token;
 			} else {
 				if (Turnpoint.ATTRIBUTES.hasOwnProperty(token)) {
@@ -118,7 +118,7 @@ $.extend(Turnpoint.prototype, {
 			}
 		});
 		for (var j = 0; j < waypoints.length; ++j) {
-			if (waypoints[j].id.substr(0, this.name.length).toLowerCase() == this.name) {
+			if (waypoints[j].id.substr(0, this.name.length).toLowerCase() === this.name) {
 				this.id = waypoints[j].id;
 				this.description = waypoints[j].description;
 				this.position = waypoints[j].position;
@@ -156,14 +156,14 @@ $.extend(Task.prototype, {
 	parse: function (s, waypoints) {
 		var that = this;
 		$.each(s.split(/\s+/), function (i, token) {
-			if (i == 0) {
+			if (i === 0) {
 				token = token.toLowerCase();
 				if (token != 'tsk') {
 					that.errors.push('Invalid task header "' + token + '"');
 				}
-			} else if (i == 1) {
+			} else if (i === 1) {
 				that.name = token;
-			} else if (i == 2) {
+			} else if (i === 2) {
 				token = token.toLowerCase();
 				if (Task.TYPES.hasOwnProperty(token)) {
 					that.type = token;
@@ -220,7 +220,7 @@ $.extend(Task.prototype, {
 				heading: 0,
 				include: true,
 				position: turnpoint.position,
-				radius: i == 0 || turnpoint.attributes.hasOwnProperty('gl') ? 0 : turnpoint.radius
+				radius: i === 0 || turnpoint.attributes.hasOwnProperty('gl') ? 0 : turnpoint.radius
 			};
 		});
 		$.each(points, function (i, point) {
@@ -303,11 +303,11 @@ $.extend(Task.prototype, {
 		$('#taskTaskClose', taskBoardContent).html(formatTime(this.taskClose));
 		var count = 1;
 		$.each(this.turnpoints, function (i, turnpoint) {
-			var turnpointRow = $('#turnpointRow', taskBoardContent).clone().attr({id: null, class: i % 2 == 0 ? 'tbl-points-even' : 'tbl-points-odd'}).show();
+			var turnpointRow = $('#turnpointRow', taskBoardContent).clone().attr({id: null, class: i % 2 === 0 ? 'tbl-points-even' : 'tbl-points-odd'}).show();
 			var index;
-			if (i == 0) {
+			if (i === 0) {
 				index = 'TO';
-			} else if (i == that.turnpoints.length - 1) {
+			} else if (i === that.turnpoints.length - 1) {
 				index = 'GOAL';
 				++count;
 			} else if (turnpoint.attributes.hasOwnProperty('ss')) {
@@ -333,7 +333,7 @@ $.extend(Task.prototype, {
 	show: function (map) {
 		var positions = [];
 		$.each(this.turnpoints, function (i, turnpoint) {
-			if (i == 0) {
+			if (i === 0) {
 				positions.push(turnpoint.position);
 			} else {
 				if (turnpoint.position != positions[positions.length - 1]) {
