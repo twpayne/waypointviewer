@@ -375,7 +375,7 @@ $.extend(Task.prototype, {
 
 });
 
-$(document).ready(function () {
+$(function () {
 
 	var options = {
 		disableDoubleClickZoom: true,
