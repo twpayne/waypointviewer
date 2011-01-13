@@ -218,20 +218,17 @@ $.extend(Task.prototype, {
 	},
 
 	computeShortestPath: function () {
-		var alongTrackDistance, crossTrackDistance, heading, heading1, heading2, i, length, path, point, points;
+		var alongTrackDistance, crossTrackDistance, heading, heading1, heading2, i, length, path, points;
 		points = $.map(this.turnpoints, function (turnpoint, i) {
 			return {
 				center: turnpoint.position,
-				heading: 0,
 				include: true,
-				position: turnpoint.position,
 				radius: i === 0 || turnpoint.attributes.hasOwnProperty('gl') ? 0 : turnpoint.radius
 			};
 		});
 		$.each(points, function (i, point) {
 			var j, previous;
 			if (i > 0) {
-				previous = null;
 				for (j = i - 1; j >= 0; j -= 1) {
 					if (points[j].include) {
 						previous = points[j];
@@ -246,33 +243,31 @@ $.extend(Task.prototype, {
 		points = $.map(points, function (point, i) {
 			return point.include ? point : null;
 		});
+		path = $.map(points, function (point, i) {
+			return point.center;
+		});
 		this.shortestPath = null;
 		this.shortestPathLength = null;
 		while (true) {
 			for (i = 1; i < points.length - 1; i += 1) {
-				point = points[i];
-				if (point.radius > 0) {
-					crossTrackDistance = computeCrossTrackDistance(points[i - 1].position, points[i + 1].position, point.center, R);
-					if (Math.abs(crossTrackDistance) < point.radius) {
-						alongTrackDistance = computeAlongTrackDistance(points[i - 1].position, points[i + 1].position, point.center, R);
-						heading = computeHeading(points[i - 1].position, points[i + 1].position);
-						point.position = computeOffset(points[i - 1].position, alongTrackDistance, heading, R);
+				if (points[i].radius > 0) {
+					crossTrackDistance = computeCrossTrackDistance(path[i - 1], path[i + 1], points[i].center, R);
+					if (Math.abs(crossTrackDistance) < points[i].radius) {
+						alongTrackDistance = computeAlongTrackDistance(path[i - 1], path[i + 1], points[i].center, R);
+						heading = computeHeading(path[i - 1], path[i + 1]);
+						path[i] = computeOffset(path[i - 1], alongTrackDistance, heading, R);
 					} else {
-						heading1 = computeHeading(point.position, points[i - 1].position);
-						heading2 = computeHeading(point.position, points[i + 1].position);
+						heading1 = computeHeading(path[i], path[i - 1]);
+						heading2 = computeHeading(path[i], path[i + 1]);
 						heading = (heading1 + heading2) / 2 + (Math.abs(heading1 - heading2) > 180 ? 180 : 0);
-						point.position = computeOffset(point.center, point.radius, heading, R);
+						path[i] = computeOffset(points[i].center, points[i].radius, heading, R);
 					}
 				}
 			}
 			if (points[points.length - 1].radius > 0) {
-				point = points[points.length - 1];
-				heading = computeHeading(point.position, points[points.length - 2].position);
-				point.position = computeOffset(point.center, point.radius, heading, R);
+				heading = computeHeading(path[points.length - 1].position, path[points.length - 2]);
+				path[points.length - 1] = computeOffset(points[length - 1].center, points[length - 1].radius, heading, R);
 			}
-			path = $.map(points, function (point, i) {
-				return point.include ? point.position : null;
-			});
 			length = computeLength(path);
 			if (this.shortestPathLength) {
 				if (length < this.shortestPathLength) {
