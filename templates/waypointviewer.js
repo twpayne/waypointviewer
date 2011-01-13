@@ -311,7 +311,7 @@ $.extend(Task.prototype, {
 		count = 1;
 		$.each(this.turnpoints, function (i, turnpoint) {
 			var index, turnpointRow;
-			turnpointRow = $('#turnpointRow', taskBoardContent).clone().attr({id: null, class: i % 2 === 0 ? 'tbl-points-even' : 'tbl-points-odd'}).show();
+			turnpointRow = $('#turnpointRow', taskBoardContent).clone().attr({id: null, 'class': i % 2 === 0 ? 'tbl-points-even' : 'tbl-points-odd'}).show();
 			if (i === 0) {
 				index = 'TO';
 			} else if (i === that.turnpoints.length - 1) {
