@@ -379,6 +379,7 @@ $(document).ready(function () {
 			});
 			map.fitBounds(bounds);
 			var taskBoard = $('#taskBoard');
+			$('#taskName', taskBoard).html(task.name);
 			$('#taskDistance', taskBoard).html((computeLength(task.getPath()) / 1000).toFixed(1) + 'km');
 			$('#taskShortestDistance', taskBoard).html((computeLength(shortestPath) / 1000).toFixed(1) + 'km');
 			$('#taskType', taskBoard).html(Task.TYPES[task.type]);
