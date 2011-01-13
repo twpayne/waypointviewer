@@ -96,10 +96,12 @@ $.extend(Waypoint.prototype, {
 });
 
 function Turnpoint() {
-	this.name = null;
 	this.attributes = {};
-	this.radius = 400;
+	this.description = null;
 	this.errors = [];
+	this.id = null;
+	this.position = null;
+	this.radius = 400;
 }
 
 $.extend(Turnpoint, {
@@ -112,7 +114,17 @@ $.extend(Turnpoint.prototype, {
 		var j, that = this;
 		$.each(s.toLowerCase().split('.'), function (i, token) {
 			if (i === 0) {
-				that.name = token;
+				for (j = 0; j < waypoints.length; j += 1) {
+					if (waypoints[j].id.substr(0, token.length).toLowerCase() === token) {
+						that.id = waypoints[j].id;
+						that.description = waypoints[j].description;
+						that.position = waypoints[j].position;
+						break;
+					}
+				}
+				if (that.id == null) {
+					that.errors.push('Invalid waypoint "' + token + '"');
+				}
 			} else {
 				if (Turnpoint.ATTRIBUTES.hasOwnProperty(token)) {
 					that.attributes[token] = true;
@@ -123,14 +135,6 @@ $.extend(Turnpoint.prototype, {
 				}
 			}
 		});
-		for (j = 0; j < waypoints.length; j += 1) {
-			if (waypoints[j].id.substr(0, this.name.length).toLowerCase() === this.name) {
-				this.id = waypoints[j].id;
-				this.description = waypoints[j].description;
-				this.position = waypoints[j].position;
-				break;
-			}
-		}
 		return this;
 	}
 
