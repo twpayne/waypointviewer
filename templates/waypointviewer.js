@@ -408,9 +408,12 @@ $(document).ready(function () {
 				}
 				$('#turnpointRow', taskBoard).before(turnpointRow);
 			});
-			var infoWindow = new google.maps.InfoWindow({content: taskBoard.show().get(0), position: task.turnpoints[0].position});
-			var taskBoardButton = $('#taskBoardButton').click(function () { infoWindow.open(map); }).show();
-			map.controls[google.maps.ControlPosition.TOP_CENTER].push(taskBoardButton.get(0));
+			var infoWindow = new google.maps.InfoWindow({content: taskBoard.show().get(0)});
+			var taskBoardButton = $('#taskBoardButton').click(function () {
+				infoWindow.setPosition(new google.maps.LatLng(map.getBounds().getSouthWest().lat(), map.getCenter().lng()));
+				infoWindow.open(map);
+			}).show();
+			map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(taskBoardButton.get(0));
 		});
 	} else {
 		$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
