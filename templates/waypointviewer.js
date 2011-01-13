@@ -1,3 +1,6 @@
+/*jslint white: true, onevar: true, undef: true, newcap: true, nomen: true, regexp: true, plusplus: true, bitwise: true, browser: true */
+/*global $: false, google: false, self: false, sprintf: false, RichMarker: false, RichMarkerPosition: false */
+
 var R = 6371000;
 var kml = '{{ kml|addslashes }}';
 var tsk = '{{ tsk|addslashes }}';
