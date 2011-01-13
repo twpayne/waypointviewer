@@ -24,6 +24,10 @@ function computeAlongTrackDistance(from, to, point, radius) {
 	return radius * Math.acos(Math.cos(d13 / radius) / Math.cos(dxt / radius));
 }
 
+function formatTime(i) {
+	return i ? sprintf('%02d:%02d', i / 60, i % 60) : null;
+}
+
 function Waypoint(feature) {
 	this.color = feature.properties.hasOwnProperty('color') ? '#' + feature.properties.color : '#ffff00';
 	this.description = feature.properties.hasOwnProperty('description') ? feature.properties.description : null;
