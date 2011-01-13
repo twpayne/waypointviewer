@@ -379,12 +379,12 @@ $(document).ready(function () {
 			});
 			map.fitBounds(bounds);
 			var taskBoard = $('#taskBoard');
-			$('#distance', taskBoard).html((computeLength(task.getPath()) / 1000).toFixed(1) + 'km');
-			$('#shortestDistance', taskBoard).html((computeLength(shortestPath) / 1000).toFixed(1) + 'km');
-			$('#type', taskBoard).html(Task.TYPES[task.type]);
+			$('#taskDistance', taskBoard).html((computeLength(task.getPath()) / 1000).toFixed(1) + 'km');
+			$('#taskShortestDistance', taskBoard).html((computeLength(shortestPath) / 1000).toFixed(1) + 'km');
+			$('#taskType', taskBoard).html(Task.TYPES[task.type]);
 			var count = 1;
 			$.each(task.turnpoints, function (i, turnpoint) {
-				var turnpointRow = $('#turnpointRow', taskBoard).clone().attr({id: null}).show();
+				var turnpointRow = $('#turnpointRow', taskBoard).clone().attr({id: null, class: i % 2 == 0 ? 'tbl-points-even' : 'tbl-points-odd'}).show();
 				var index;
 				if (i == 0) {
 					index = 'TO';

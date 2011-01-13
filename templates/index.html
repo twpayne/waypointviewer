@@ -52,51 +52,125 @@
 			</table>
 		</div>
 		<div id="taskBoard" class="taskBoard" style="display: none">
-			<table>
-				<tbody>
-	{% if title %}
-					<tr>
-						<td colspan="5">{{ title|escape }}</td>
-					</tr>
-	{% endif %}
-					<tr>
-						<th>Task Type:</th>
-						<td id="type"></td>
-					</tr>
-					<tr>
-						<th>Window Open:</th>
-						<td id="wo"></td>
-						<th>Window Close:</th>
-						<td id="wc"></td>
-					</tr>
-					<tr>
-						<th>Start:</th>
-						<td id="so"></td>
-						<th>Task Deadline:</th>
-						<td id="tc"></td>
-					</tr>
-					<tr>
-						<th>Point</th>
-						<th>Name</th>
-						<th>Description</th>
-						<th>Radius</th>
-						<th>Distance</th>
-					</tr>
-					<tr id="turnpointRow" style="display: none;">
-						<td><span id="turnpointIndex"></span></td>
-						<td><span id="turnpointId"></span></td>
-						<td><span id="turnpointDescription"></span></td>
-						<td><span id="turnpointRadius"></span></td>
-						<td><span id="turnpointDistance"></span></td>
-					</tr>
-					<tr>
-						<th>GPS Distance:</th>
-						<td><span id="distance"></span></td>
-						<th>Task Distance:</th>
-						<td><span id="shortestDistance"></span></td>
-					</tr>
-				</tbody>
-			</table>
+			<div class="tsk-top">
+				<table border="0" cellpadding="0" cellspacing="0" width="100%">
+					<colgroup>
+						<col width="35"/>
+						<col width="*"/>
+						<col width="50"/>
+					</colgroup>
+					<tbody>
+						<tr>
+							<td><div id="flag"></div></td>
+							<td class="compName">{{ title|escape }}</td>
+							<td class="taskId">Task #</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="tsk-1">
+				<table class="tb-details" cellpadding="1" cellspacing="1">
+					<colgroup>
+						<col width="10%">
+						<col width="40%">
+						<col width="*">
+						<col width="10%">
+						<col width="20%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<td class="tbl-name">Venue:</td>
+							<td></td>
+							<td> </td>
+							<td class="tbl-name">Date:</td>
+							<td class="tbl-val-r"></td>
+						</tr>
+						<tr>
+							<td class="tbl-name">Site:</td>
+							<td></td>
+							<td> </td>
+							<td class="tbl-name">Type:</td>
+							<td id="taskType" class="tbl-val-r"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="tsk-2">
+				<table class="tb-details" cellpadding="1" cellspacing="1">
+					<colgroup>
+						<col width="20%">
+						<col width="10%">
+						<col width="*">
+						<col width="20%">
+						<col width="10%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<td class="tbl-name">Window Open:</td>
+							<td class="tbl-val-r">12:00</td>
+							<td> </td>
+							<td class="tbl-name">Window Close:</td>
+							<td class="tbl-val-r">13:30</td>
+						</tr>
+						<tr>
+							<td class="tbl-name">Start:</td>
+							<td class="tbl-val-r">13:00</td>
+							<td> </td>
+							<td class="tbl-name">Task Deadline:</td>
+							<td class="tbl-val-r">17:00</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="tsk-1">
+				<table class="tb-points" cellspacing="0" cellpadding="2">
+					<colgroup>
+						<col width="15%">
+						<col width="10%">
+						<col width="25%">
+						<col width="25%">
+						<col width="25%">
+					</colgroup>
+					<thead>
+						<tr>
+							<td>Point</td>
+							<td>Name</td>
+							<td align="right">Radius</td>
+							<td align="right">Leg Dist</td>
+							<td align="right">Goal Dist</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr id="turnpointRow" style="display: none;">
+							<td id="turnpointIndex"></td>
+							<td id="turnpointDescription"></td>
+							<td id="turnpointRadius" align="right"></td>
+							<td id="turnpointDistance" align="right"></td>
+							<td id="turnpointGoalDistance" align="right"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="tsk-bottom">
+				<table class="tsk-tb1" cellpadding="1" cellspacing="1">
+					<colgroup>
+						<col width="27%">
+						<col width="20%">
+						<col width="*">
+						<col width="27%">
+						<col width="20%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<td class="tbl-name">GPS Distance</td>
+							<td id="taskDistance" class="tbl-val-r"></td>
+							<td> </td>
+							<td class="tbl-name">Task Distance</td>
+							<td class="tbl-val-r"><b id="taskShortestDistance"></b></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</body>
 </html>

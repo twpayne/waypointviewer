@@ -1,5 +1,6 @@
 body {
 	border-width: 0px;
+	font-family: Arial, Helvetica, sans-serif;
 	padding: 0px;
 	margin: 0px;
 }
@@ -49,4 +50,80 @@ body {
 	font-size: 7pt;
 	margin: 0px;
 	padding: 0px 2px;
+}
+
+#taskBoard {
+	background-color: #e3e3fc;
+	border: 1px solid #e3e3fc;
+	border-radius: 6px;
+	width: 346px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+}
+
+.tsk-top {
+	padding: 10px;
+	background-color: transparent;
+}
+
+.tsk-bottom {
+	padding: 5px 10px;
+	background-color: transparent;
+}
+
+.tsk-1 {
+	padding: 5px 10px 5px 10px;
+	background-color: #fff;
+}
+
+.tsk-2 {
+	padding: 5px 10px 5px 10px;
+	background-color: #f5f5ff;
+}
+
+.tsk-tb1 {
+	font-size: 80%;
+	width: 100%;
+}
+
+.tb-details {
+	font-size: 75%;
+	width: 100%;
+	margin: 5px 0 10px 0;
+}
+
+.tb-points {
+	font-size: 75%;
+	width: 100%;
+	margin: 5px 0 10px 0;
+}
+
+.compName {
+	font-weight: bold;
+	font-size: 90%;
+	vertical-align: top;
+}
+
+.taskId {
+	font-weight: bold;
+	font-style: italic;
+	font-size: 75%;
+	vertical-align: top;
+	text-align: right;
+}
+
+.tbl-name {
+	color: #0b3b0b;
+}
+
+.tbl-val-r {
+	text-align: right;
+}
+
+.tb-points-odd {
+	background-color: #fff;
+}
+
+.tb-points-even {
+	background-color: #fefdec;
 }
