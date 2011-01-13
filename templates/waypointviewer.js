@@ -149,7 +149,7 @@ function Task() {
 }
 
 $.extend(Task, {
-	BASE_TIME: {wc: 'windowOpen', so: 'windowOpen', sl: 'windowOpen', sc: 'windowOpen', gc: 'windowOpen', tc: 'windowOpen'},
+	REFERENCE_TIME: {wc: 'windowOpen', so: 'windowOpen', sl: 'windowOpen', sc: 'windowOpen', gc: 'windowOpen', tc: 'windowOpen'},
 	TIME_NAME: {wo: 'windowOpen', wc: 'windowClose', so: 'startOpen', sl: 'startLast', sc: 'startClose', gc: 'goalClose', tc: 'taskClose'},
 	TYPES: {race: 'Race To Goal', open: 'Open Distance', elap: 'Elapsed Time', head: 'Headed Open Distance'}
 });
@@ -159,7 +159,7 @@ $.extend(Task.prototype, {
 	parse: function (s, waypoints) {
 		var i, that = this;
 		$.each(s.split(/\s+/), function (i, token) {
-			var base_time, time, turnpoint;
+			var referenceTime, time, turnpoint;
 			if (i === 0) {
 				token = token.toLowerCase();
 				if (token !== 'tsk') {
@@ -183,11 +183,11 @@ $.extend(Task.prototype, {
 					time = Task.TIME_NAME[RegExp.$1];
 					that[time] = (RegExp.$3 ? 60 * parseInt(RegExp.$3, 10) : 0) + parseInt(RegExp.$4, 10);
 					if (RegExp.$2) {
-						base_time = that[Task.BASE_TIME[RegExp.$1]];
-						if (base_time !== null) {
-							that[time] += base_time;
+						referenceTime = that[Task.REFERENCE_TIME[RegExp.$1]];
+						if (referenceTime !== null) {
+							that[time] += referenceTime;
 						} else {
-							that.errors.push('Cannot specify relative time "' + time + '" when "' + Task.BASE_TIME[RegExp.$1] + '" is not set');
+							that.errors.push('Cannot specify relative time "' + time + '" when "' + Task.REFERENCE_TIME[RegExp.$1] + '" is not set');
 						}
 					}
 				} else {
