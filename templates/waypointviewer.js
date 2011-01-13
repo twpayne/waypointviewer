@@ -120,7 +120,7 @@ $.extend(Turnpoint.prototype, {
 				}
 			}
 		});
-		for (j = 0; j < waypoints.length; ++j) {
+		for (j = 0; j < waypoints.length; j += 1) {
 			if (waypoints[j].id.substr(0, this.name.length).toLowerCase() === this.name) {
 				this.id = waypoints[j].id;
 				this.description = waypoints[j].description;
@@ -199,7 +199,7 @@ $.extend(Task.prototype, {
 				}
 			}
 		});
-		for (i = 0; i < this.turnpoints.length - 1; ++i) {
+		for (i = 0; i < this.turnpoints.length - 1; i += 1) {
 			if (this.turnpoints[i].attributes.hasOwnProperty('ss') && this.turnpoints[i].name != this.turnpoints[i + 1].name) {
 				this.turnpoints[i].attributes.exit = true;
 				break;
@@ -232,7 +232,7 @@ $.extend(Task.prototype, {
 			var j, previous;
 			if (i > 0) {
 				previous = null;
-				for (j = i - 1; j >= 0; --j) {
+				for (j = i - 1; j >= 0; j -= 1) {
 					if (points[j].include) {
 						previous = points[j];
 						break;
@@ -249,7 +249,7 @@ $.extend(Task.prototype, {
 		this.shortestPath = null;
 		this.shortestPathLength = null;
 		while (true) {
-			for (i = 1; i < points.length - 1; ++i) {
+			for (i = 1; i < points.length - 1; i += 1) {
 				point = points[i];
 				if (point.radius > 0) {
 					crossTrackDistance = computeCrossTrackDistance(points[i - 1].position, points[i + 1].position, point.center, R);
@@ -316,15 +316,15 @@ $.extend(Task.prototype, {
 				index = 'TO';
 			} else if (i === that.turnpoints.length - 1) {
 				index = 'GOAL';
-				++count;
+				count += 1;
 			} else if (turnpoint.attributes.hasOwnProperty('ss')) {
 				index = 'SS' + (turnpoint.attributes.hasOwnProperty('exit') ? ' (EXIT)' : '');
 			} else if (turnpoint.attributes.hasOwnProperty('es')) {
 				index = 'ES';
-				++count;
+				count += 1;
 			} else {
 				index = count;
-				++count;
+				count += 1;
 			}
 			$('#turnpointIndex', turnpointRow).html(index);
 			$('#turnpointId', turnpointRow).html(turnpoint.id);
