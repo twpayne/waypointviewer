@@ -150,7 +150,7 @@ function Task() {
 
 $.extend(Task, {
 	BASE_TIME: {wc: 'wo', so: 'wo', sl: 'so', sc: 'so', gc: 'wo', tc: 'wo'},
-	TYPES: {race: 'race to goal', open: 'open distance', elap: 'elapsed time', head: 'headed open distance'}
+	TYPES: {race: 'Race To Goal', open: 'Open Distance', elap: 'Elapsed Time', head: 'Headed Open Distance'}
 });
 
 $.extend(Task.prototype, {
