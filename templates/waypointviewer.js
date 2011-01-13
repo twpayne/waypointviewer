@@ -377,10 +377,24 @@ $.extend(Task.prototype, {
 
 $(document).ready(function () {
 
-	var map = new google.maps.Map($('#map').get(0), {
+	var options = {
 		disableDoubleClickZoom: true,
-		mapTypeId: google.maps.MapTypeId.TERRAIN
-	});
+		mapTypeId: google.maps.MapTypeId.TERRAIN,
+		streetViewControl: false
+	};
+
+	if (top.location != self.location) {
+		$.extend(options, {
+			mapTypeControlOptions: {
+				style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+			},
+			zoomControlOptions: {
+				style: google.maps.ZoomControlStyle.SMALL
+			}
+		});
+	}
+
+	var map = new google.maps.Map($('#map').get(0), options);
 
 	if (top.location != self.location) {
 		var fullScreenButton = $('#fullScreenButton').clone().attr({id: null}).show().click(function () {
