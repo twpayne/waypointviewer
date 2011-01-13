@@ -10,17 +10,19 @@ var computeOffset = google.maps.geometry.spherical.computeOffset;
 
 /* http://www.movable-type.co.uk/scripts/latlong.html */
 function computeCrossTrackDistance(from, to, point, radius) {
+	var d13, theta12, theta13;
 	radius = radius || 6378137;
-	var d13 = computeDistanceBetween(from, point, radius);
-	var theta12 = computeHeading(from, to);
-	var theta13 = computeHeading(from, point);
+	d13 = computeDistanceBetween(from, point, radius);
+	theta12 = computeHeading(from, to);
+	theta13 = computeHeading(from, point);
 	return radius * Math.asin(Math.sin(d13 / radius) * Math.sin(Math.PI * (theta13 - theta12) / 180));
 }
 
 function computeAlongTrackDistance(from, to, point, radius) {
+	var d13, dxt;
 	radius = radius || 6378137;
-	var d13 = computeDistanceBetween(from, point, radius);
-	var dxt = computeCrossTrackDistance(from, to, point, radius);
+	d13 = computeDistanceBetween(from, point, radius);
+	dxt = computeCrossTrackDistance(from, to, point, radius);
 	return radius * Math.acos(Math.cos(d13 / radius) / Math.cos(dxt / radius));
 }
 
@@ -40,9 +42,10 @@ function Waypoint(feature) {
 $.extend(Waypoint.prototype, {
 
 	show: function (map) {
-		var richMarkerContent = $('#waypointRichMarkerContent').clone().attr({id: null}).css('background-color', this.color).show();
+		var circle, infoWindow, infoWindowContent, marker, richMarkerContent;
+		richMarkerContent = $('#waypointRichMarkerContent').clone().attr({id: null}).css('background-color', this.color).show();
 		$('#waypointLabel', richMarkerContent).html(this.id.match(/^([A-Z][0-9]{2})([0-9]{3})$/) && 10 * (RegExp.$2 - 1) <= this.elevation && this.elevation <= 10 * (RegExp.$2 + 1) ? RegExp.$1 : this.id);
-		var marker = new RichMarker({
+		marker = new RichMarker({
 			anchor: RichMarkerPosition.MIDDLE,
 			content: richMarkerContent.get(0),
 			flat: true,
@@ -50,7 +53,7 @@ $.extend(Waypoint.prototype, {
 			position: this.position
 		});
 		if (this.radius) {
-			var circle = new google.maps.Circle({
+			circle = new google.maps.Circle({
 				clickable: false,
 				fillColor: this.color,
 				fillOpacity: 0.25,
@@ -62,7 +65,7 @@ $.extend(Waypoint.prototype, {
 			circle.bindTo('strokeColor', circle, 'fillColor');
 			circle.bindTo('map', marker);
 		}
-		var infoWindowContent = $('#waypointInfoWindowContent').clone().attr({id: null}).show();
+		infoWindowContent = $('#waypointInfoWindowContent').clone().attr({id: null}).show();
 		$('#waypointIdValue', infoWindowContent).html(this.id);
 		$('#waypointLatitudeValue', infoWindowContent).html(this.position.lat().toFixed(5) + '&deg;');
 		$('#waypointLongitudeValue', infoWindowContent).html(this.position.lng().toFixed(5) + '&deg;');
@@ -81,7 +84,7 @@ $.extend(Waypoint.prototype, {
 		} else {
 			$('#waypointRadius', infoWindowContent).hide();
 		}
-		var infoWindow = new google.maps.InfoWindow({content: infoWindowContent.get(0)});
+		infoWindow = new google.maps.InfoWindow({content: infoWindowContent.get(0)});
 		google.maps.event.addListener(marker, 'click', function () {
 			infoWindow.open(map, marker);
 		});
@@ -103,7 +106,7 @@ $.extend(Turnpoint, {
 $.extend(Turnpoint.prototype, {
 
 	parse: function (s, waypoints) {
-		var that = this;
+		var j, that = this;
 		$.each(s.toLowerCase().split('.'), function (i, token) {
 			if (i === 0) {
 				that.name = token;
@@ -117,7 +120,7 @@ $.extend(Turnpoint.prototype, {
 				}
 			}
 		});
-		for (var j = 0; j < waypoints.length; ++j) {
+		for (j = 0; j < waypoints.length; ++j) {
 			if (waypoints[j].id.substr(0, this.name.length).toLowerCase() === this.name) {
 				this.id = waypoints[j].id;
 				this.description = waypoints[j].description;
@@ -154,8 +157,9 @@ $.extend(Task, {
 $.extend(Task.prototype, {
 
 	parse: function (s, waypoints) {
-		var that = this;
+		var i, that = this;
 		$.each(s.split(/\s+/), function (i, token) {
+			var base_time, time, turnpoint;
 			if (i === 0) {
 				token = token.toLowerCase();
 				if (token != 'tsk') {
@@ -176,10 +180,10 @@ $.extend(Task.prototype, {
 				if (token.match(/^(wo)(\d\d)(\d\d)$/)) {
 					that.windowOpen = 60 * parseInt(RegExp.$2, 10) + parseInt(RegExp.$3, 10);
 				} else if (token.match(/^(wc|so|sl|sc|gc|tc)(\+)?(\d?\d)?(\d\d)$/)) {
-					var time = Task.TIME_NAME[RegExp.$1];
+					time = Task.TIME_NAME[RegExp.$1];
 					that[time] = (RegExp.$3 ? 60 * parseInt(RegExp.$3, 10) : 0) + parseInt(RegExp.$4, 10);
 					if (RegExp.$2) {
-						var base_time = that[Task.BASE_TIME[RegExp.$1]];
+						base_time = that[Task.BASE_TIME[RegExp.$1]];
 						if (base_time != null) {
 							that[time] += base_time;
 						} else {
@@ -187,7 +191,7 @@ $.extend(Task.prototype, {
 						}
 					}
 				} else {
-					var turnpoint = new Turnpoint().parse(token, waypoints);
+					turnpoint = new Turnpoint().parse(token, waypoints);
 					$.each(turnpoint.errors, function (j, error) {
 						that.errors.push(error);
 					});
@@ -195,7 +199,7 @@ $.extend(Task.prototype, {
 				}
 			}
 		});
-		for (var i = 0; i < this.turnpoints.length - 1; ++i) {
+		for (i = 0; i < this.turnpoints.length - 1; ++i) {
 			if (this.turnpoints[i].attributes.hasOwnProperty('ss') && this.turnpoints[i].name != this.turnpoints[i + 1].name) {
 				this.turnpoints[i].attributes.exit = true;
 				break;
@@ -214,7 +218,8 @@ $.extend(Task.prototype, {
 	},
 
 	computeShortestPath: function () {
-		var points = $.map(this.turnpoints, function (turnpoint, i) {
+		var alongTrackDistance, crossTrackDistance, heading, heading1, heading2, i, length, path, point, points;
+		points = $.map(this.turnpoints, function (turnpoint, i) {
 			return {
 				center: turnpoint.position,
 				heading: 0,
@@ -224,9 +229,10 @@ $.extend(Task.prototype, {
 			};
 		});
 		$.each(points, function (i, point) {
+			var j, previous;
 			if (i > 0) {
-				var previous = null;
-				for (var j = i - 1; j >= 0; --j) {
+				previous = null;
+				for (j = i - 1; j >= 0; --j) {
 					if (points[j].include) {
 						previous = points[j];
 						break;
@@ -243,31 +249,31 @@ $.extend(Task.prototype, {
 		this.shortestPath = null;
 		this.shortestPathLength = null;
 		while (true) {
-			for (var i = 1; i < points.length - 1; ++i) {
-				var point = points[i];
+			for (i = 1; i < points.length - 1; ++i) {
+				point = points[i];
 				if (point.radius > 0) {
-					var crossTrackDistance = computeCrossTrackDistance(points[i - 1].position, points[i + 1].position, point.center, R);
+					crossTrackDistance = computeCrossTrackDistance(points[i - 1].position, points[i + 1].position, point.center, R);
 					if (Math.abs(crossTrackDistance) < point.radius) {
-						var alongTrackDistance = computeAlongTrackDistance(points[i - 1].position, points[i + 1].position, point.center, R);
-						var heading = computeHeading(points[i - 1].position, points[i + 1].position);
+						alongTrackDistance = computeAlongTrackDistance(points[i - 1].position, points[i + 1].position, point.center, R);
+						heading = computeHeading(points[i - 1].position, points[i + 1].position);
 						point.position = computeOffset(points[i - 1].position, alongTrackDistance, heading, R);
 					} else {
-						var heading1 = computeHeading(point.position, points[i - 1].position);
-						var heading2 = computeHeading(point.position, points[i + 1].position);
-						var heading = (heading1 + heading2) / 2 + (Math.abs(heading1 - heading2) > 180 ? 180 : 0);
+						heading1 = computeHeading(point.position, points[i - 1].position);
+						heading2 = computeHeading(point.position, points[i + 1].position);
+						heading = (heading1 + heading2) / 2 + (Math.abs(heading1 - heading2) > 180 ? 180 : 0);
 						point.position = computeOffset(point.center, point.radius, heading, R);
 					}
 				}
 			}
 			if (points[points.length - 1].radius > 0) {
-				var point = points[points.length - 1];
-				var heading = computeHeading(point.position, points[points.length - 2].position);
+				point = points[points.length - 1];
+				heading = computeHeading(point.position, points[points.length - 2].position);
 				point.position = computeOffset(point.center, point.radius, heading, R);
 			}
-			var path = $.map(points, function (point, i) {
+			path = $.map(points, function (point, i) {
 				return point.include ? point.position : null;
 			});
-			var length = computeLength(path);
+			length = computeLength(path);
 			if (this.shortestPathLength) {
 				if (length < this.shortestPathLength) {
 					this.shortestPath = path;
@@ -283,7 +289,8 @@ $.extend(Task.prototype, {
 	},
 
 	getBounds: function () {
-		var bounds = new google.maps.LatLngBounds();
+		var bounds;
+		bounds = new google.maps.LatLngBounds();
 		$.each(this.turnpoints, function (i, turnpoint) {
 			bounds.extend(turnpoint.position);
 		});
@@ -291,8 +298,8 @@ $.extend(Task.prototype, {
 	},
 
 	getTaskBoardContent: function () {
-		var that = this;
-		var taskBoardContent = $('#taskBoardContent').clone().attr({id: null}).show();
+		var count, taskBoardContent, that = this;
+		taskBoardContent = $('#taskBoardContent').clone().attr({id: null}).show();
 		$('#taskName', taskBoardContent).html(this.name);
 		$('#taskDistance', taskBoardContent).html((this.pathLength / 1000).toFixed(1) + 'km');
 		$('#taskShortestDistance', taskBoardContent).html((this.shortestPathLength / 1000).toFixed(1) + 'km');
@@ -301,10 +308,10 @@ $.extend(Task.prototype, {
 		$('#taskStartOpen', taskBoardContent).html(formatTime(this.startOpen));
 		$('#taskWindowClose', taskBoardContent).html(formatTime(this.windowClose));
 		$('#taskTaskClose', taskBoardContent).html(formatTime(this.taskClose));
-		var count = 1;
+		count = 1;
 		$.each(this.turnpoints, function (i, turnpoint) {
-			var turnpointRow = $('#turnpointRow', taskBoardContent).clone().attr({id: null, class: i % 2 === 0 ? 'tbl-points-even' : 'tbl-points-odd'}).show();
-			var index;
+			var index, turnpointRow;
+			turnpointRow = $('#turnpointRow', taskBoardContent).clone().attr({id: null, class: i % 2 === 0 ? 'tbl-points-even' : 'tbl-points-odd'}).show();
 			if (i === 0) {
 				index = 'TO';
 			} else if (i === that.turnpoints.length - 1) {
@@ -331,15 +338,16 @@ $.extend(Task.prototype, {
 	},
 
 	show: function (map) {
-		var positions = [];
+		var positions, shortestPathOverlay;
+		positions = [];
 		$.each(this.turnpoints, function (i, turnpoint) {
+			var color, heading, overlay;
 			if (i === 0) {
 				positions.push(turnpoint.position);
 			} else {
 				if (turnpoint.position != positions[positions.length - 1]) {
 					positions.push(turnpoint.position);
 				}
-				var color = null;
 				if (turnpoint.attributes.hasOwnProperty('ss')) {
 					color = '#00ff00';
 				} else if (turnpoint.attributes.hasOwnProperty('es')) {
@@ -348,8 +356,8 @@ $.extend(Task.prototype, {
 					color = '#ffff00';
 				}
 				if (turnpoint.attributes.hasOwnProperty('gl')) {
-					var heading = computeHeading(turnpoint.position, positions[positions.length - 2]);
-					var polyline = new google.maps.Polyline({
+					heading = computeHeading(turnpoint.position, positions[positions.length - 2]);
+					overlay = new google.maps.Polyline({
 						map: map,
 						path: [
 							computeOffset(turnpoint.position, turnpoint.radius, heading - 90, R),
@@ -360,7 +368,7 @@ $.extend(Task.prototype, {
 						strokeWeight: 2
 					});
 				} else {
-					var circle = new google.maps.Circle({
+					overlay = new google.maps.Circle({
 						center: turnpoint.position,
 						fillColor: color,
 						fillOpacity: 0.1,
@@ -373,7 +381,7 @@ $.extend(Task.prototype, {
 				}
 			}
 		});
-		var polyline = new google.maps.Polyline({
+		shortestPathOverlay = new google.maps.Polyline({
 			map: map,
 			path: this.shortestPath,
 			strokeColor: '#ffff00',
@@ -386,7 +394,9 @@ $.extend(Task.prototype, {
 
 $(function () {
 
-	var options = {
+	var fullScreenButton, kmlLayer, map, options;
+
+	options = {
 		disableDoubleClickZoom: true,
 		mapTypeId: google.maps.MapTypeId.TERRAIN,
 		streetViewControl: false
@@ -403,25 +413,25 @@ $(function () {
 		});
 	}
 
-	var map = new google.maps.Map($('#map').get(0), options);
+	map = new google.maps.Map($('#map').get(0), options);
 
 	if (top.location != self.location) {
-		var fullScreenButton = $('#fullScreenButton').clone().attr({id: null}).show().click(function () {
+		fullScreenButton = $('#fullScreenButton').clone().attr({id: null}).show().click(function () {
 			top.location = self.location.href;
 		});
 		map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(fullScreenButton.get(0));
 	}
 
 	$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
-		var bounds = null;
-		var waypoints = $.map(geojson.features, function (feature, i) {
+		var bounds, infoWindow, task, taskBoardButton, waypoints;
+		waypoints = $.map(geojson.features, function (feature, i) {
 			return new Waypoint(feature);
 		});
 		if (tsk) {
-			var task = new Task().parse('tsk ' + tsk, waypoints);
+			task = new Task().parse('tsk ' + tsk, waypoints);
 			task.show(map);
-			var infoWindow = new google.maps.InfoWindow({content: task.getTaskBoardContent().get(0)});
-			var taskBoardButton = $('#taskBoardButton').clone().attr({id: null}).show().click(function () {
+			infoWindow = new google.maps.InfoWindow({content: task.getTaskBoardContent().get(0)});
+			taskBoardButton = $('#taskBoardButton').clone().attr({id: null}).show().click(function () {
 				infoWindow.setPosition(new google.maps.LatLng(map.getBounds().getSouthWest().lat(), map.getCenter().lng()));
 				infoWindow.open(map);
 			});
@@ -441,7 +451,7 @@ $(function () {
 	});
 
 	if (kml) {
-		var kmlLayer = new google.maps.KmlLayer(kml, {
+		kmlLayer = new google.maps.KmlLayer(kml, {
 			map: map,
 			preserveViewport: true
 		});
