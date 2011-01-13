@@ -383,8 +383,10 @@ $(document).ready(function () {
 	});
 
 	if (top.location != self.location) {
-		var fullScreen = $('#fullScreen').click(function () { top.location = self.location.href; }).show();
-		map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(fullScreen.get(0));
+		var fullScreenButton = $('#fullScreenButton').clone().attr({id: null}).show().click(function () {
+			top.location = self.location.href;
+		});
+		map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(fullScreenButton.get(0));
 	}
 
 	$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
