@@ -52,7 +52,7 @@ body {
 	padding: 0px 2px;
 }
 
-#taskBoard {
+.taskBoardContent {
 	background-color: #e3e3fc;
 	border: 1px solid #e3e3fc;
 	border-radius: 6px;

@@ -98,7 +98,7 @@ $.extend(Turnpoint, {
 
 $.extend(Turnpoint.prototype, {
 
-	parse: function (s) {
+	parse: function (s, waypoints) {
 		var that = this;
 		$.each(s.toLowerCase().split('.'), function (i, token) {
 			if (i == 0) {
@@ -113,10 +113,6 @@ $.extend(Turnpoint.prototype, {
 				}
 			}
 		});
-		return this;
-	},
-
-	computePosition: function (waypoints) {
 		for (var j = 0; j < waypoints.length; ++j) {
 			if (waypoints[j].id.substr(0, this.name.length).toLowerCase() == this.name) {
 				this.id = waypoints[j].id;
@@ -125,6 +121,7 @@ $.extend(Turnpoint.prototype, {
 				break;
 			}
 		}
+		return this;
 	}
 
 });
@@ -151,7 +148,7 @@ $.extend(Task, {
 
 $.extend(Task.prototype, {
 
-	parse: function (s) {
+	parse: function (s, waypoints) {
 		var that = this;
 		$.each(s.split(/\s+/), function (i, token) {
 			if (i == 0) {
@@ -184,7 +181,7 @@ $.extend(Task.prototype, {
 						}
 					}
 				} else {
-					var turnpoint = new Turnpoint().parse(token);
+					var turnpoint = new Turnpoint().parse(token, waypoints);
 					$.each(turnpoint.errors, function (j, error) {
 						that.errors.push(error);
 					});
@@ -192,19 +189,22 @@ $.extend(Task.prototype, {
 				}
 			}
 		});
-		return this;
-	},
-
-	computePositions: function (waypoints) {
-		$.each(this.turnpoints, function (i, turnpoint) {
-			turnpoint.computePosition(waypoints);
-		});
 		for (var i = 0; i < this.turnpoints.length - 1; ++i) {
 			if (this.turnpoints[i].attributes.hasOwnProperty('ss') && this.turnpoints[i].name != this.turnpoints[i + 1].name) {
 				this.turnpoints[i].attributes.exit = true;
 				break;
 			}
 		}
+		this.computePath();
+		this.computeShortestPath();
+		return this;
+	},
+
+	computePath: function () {
+		this.path = $.map(this.turnpoints, function (turnpoint, i) {
+			return turnpoint.position;
+		});
+		this.pathLength = computeLength(this.path);
 	},
 
 	computeShortestPath: function () {
@@ -234,8 +234,8 @@ $.extend(Task.prototype, {
 		points = $.map(points, function (point, i) {
 			return point.include ? point : null;
 		});
-		var bestPath = null;
-		var bestLength = null;
+		this.shortestPath = null;
+		this.shortestPathLength = null;
 		while (true) {
 			for (var i = 1; i < points.length - 1; ++i) {
 				var point = points[i];
@@ -262,24 +262,114 @@ $.extend(Task.prototype, {
 				return point.include ? point.position : null;
 			});
 			var length = computeLength(path);
-			if (bestLength) {
-				if (length < bestLength) {
-					bestLength = length;
-					bestPath = path;
+			if (this.shortestPathLength) {
+				if (length < this.shortestPathLength) {
+					this.shortestPath = path;
+					this.shortestPathLength = length;
 				} else {
 					break;
 				}
 			} else {
-				bestLength = length;
-				bestPath = path;
+				this.shortestPath = path;
+				this.shortestPathLength = length;
 			}
 		}
-		return bestPath;
 	},
 
-	getPath: function () {
-		return $.map(this.turnpoints, function (turnpoint, i) {
-			return turnpoint.position;
+	getBounds: function () {
+		var bounds = new google.maps.LatLngBounds();
+		$.each(this.turnpoints, function (i, turnpoint) {
+			bounds.extend(turnpoint.position);
+		});
+		return bounds;
+	},
+
+	getTaskBoardContent: function () {
+		var that = this;
+		var taskBoardContent = $('#taskBoardContent').clone().attr({id: null}).show();
+		$('#taskName', taskBoardContent).html(this.name);
+		$('#taskDistance', taskBoardContent).html((this.pathLength / 1000).toFixed(1) + 'km');
+		$('#taskShortestDistance', taskBoardContent).html((this.shortestPathLength / 1000).toFixed(1) + 'km');
+		$('#taskType', taskBoardContent).html(Task.TYPES[this.type]);
+		var count = 1;
+		$.each(this.turnpoints, function (i, turnpoint) {
+			var turnpointRow = $('#turnpointRow', taskBoardContent).clone().attr({id: null, class: i % 2 == 0 ? 'tbl-points-even' : 'tbl-points-odd'}).show();
+			var index;
+			if (i == 0) {
+				index = 'TO';
+			} else if (i == that.turnpoints.length - 1) {
+				index = 'GOAL';
+				++count;
+			} else if (turnpoint.attributes.hasOwnProperty('ss')) {
+				index = 'SS' + (turnpoint.attributes.hasOwnProperty('exit') ? ' (EXIT)' : '');
+			} else if (turnpoint.attributes.hasOwnProperty('es')) {
+				index = 'ES';
+				++count;
+			} else {
+				index = count;
+				++count;
+			}
+			$('#turnpointIndex', turnpointRow).html(index);
+			$('#turnpointId', turnpointRow).html(turnpoint.id);
+			$('#turnpointDescription', turnpointRow).html(turnpoint.description);
+			if (turnpoint.radius > 0) {
+				$('#turnpointRadius', turnpointRow).html(turnpoint.radius);
+			}
+			$('#turnpointRow', taskBoardContent).before(turnpointRow);
+		});
+		return taskBoardContent;
+	},
+
+	show: function (map) {
+		var that = this;
+		var positions = [];
+		$.each(this.turnpoints, function (i, turnpoint) {
+			if (i == 0) {
+				positions.push(turnpoint.position);
+			} else {
+				if (turnpoint.position != positions[positions.length - 1]) {
+					positions.push(turnpoint.position);
+				}
+				var color = null;
+				if (turnpoint.attributes.hasOwnProperty('ss')) {
+					color = '#00ff00';
+				} else if (turnpoint.attributes.hasOwnProperty('es')) {
+					color = '#ff0000';
+				} else {
+					color = '#ffff00';
+				}
+				if (turnpoint.attributes.hasOwnProperty('gl')) {
+					var heading = computeHeading(turnpoint.position, positions[positions.length - 2]);
+					var polyline = new google.maps.Polyline({
+						map: map,
+						path: [
+							computeOffset(turnpoint.position, turnpoint.radius, heading - 90, R),
+							computeOffset(turnpoint.position, turnpoint.radius, heading + 90, R)
+						],
+						strokeColor: color,
+						strokeOpacity: 1,
+						strokeWeight: 2
+					});
+				} else {
+					var circle = new google.maps.Circle({
+						center: turnpoint.position,
+						fillColor: color,
+						fillOpacity: 0.1,
+						map: map,
+						radius: turnpoint.radius,
+						strokeColor: color,
+						strokeOpacity: 1,
+						strokeWeight: 1
+					});
+				}
+			}
+		});
+		var polyline = new google.maps.Polyline({
+			map: map,
+			path: this.shortestPath,
+			strokeColor: '#ffff00',
+			strokeOpacity: 1,
+			strokeWeight: 2
 		});
 	}
 
@@ -300,101 +390,20 @@ $(document).ready(function () {
 	var bounds = new google.maps.LatLngBounds();
 
 	if (tsk) {
-		var task = new Task().parse('tsk ' + tsk);
 		$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
 			var waypoints = $.map(geojson.features, function (feature, i) {
 				return new Waypoint(feature);
 			});
-			task.computePositions(waypoints);
-			var positions = [];
-			$.each(task.turnpoints, function (i, turnpoint) {
-				if (i == 0) {
-					positions.push(turnpoint.position);
-				} else {
-					if (turnpoint.position != positions[positions.length - 1]) {
-						positions.push(turnpoint.position);
-					}
-					var color = null;
-					if (turnpoint.attributes.hasOwnProperty('ss')) {
-						color = '#00ff00';
-					} else if (turnpoint.attributes.hasOwnProperty('es')) {
-						color = '#ff0000';
-					} else {
-						color = '#ffff00';
-					}
-					if (turnpoint.attributes.hasOwnProperty('gl')) {
-						var heading = computeHeading(turnpoint.position, positions[positions.length - 2]);
-						var polyline = new google.maps.Polyline({
-							map: map,
-							path: [
-								computeOffset(turnpoint.position, turnpoint.radius, heading - 90, R),
-								computeOffset(turnpoint.position, turnpoint.radius, heading + 90, R)
-							],
-							strokeColor: color,
-							strokeOpacity: 1,
-							strokeWeight: 2
-						});
-					} else {
-						var circle = new google.maps.Circle({
-							center: turnpoint.position,
-							fillColor: color,
-							fillOpacity: 0.1,
-							map: map,
-							radius: turnpoint.radius,
-							strokeColor: color,
-							strokeOpacity: 1,
-							strokeWeight: 1
-						});
-					}
-				}
-				bounds.extend(turnpoint.position);
-			});
-			var shortestPath = task.computeShortestPath();
-			var polyline = new google.maps.Polyline({
-				map: map,
-				path: shortestPath,
-				strokeColor: '#ffff00',
-				strokeOpacity: 1,
-				strokeWeight: 2
-			});
-			map.fitBounds(bounds);
-			var taskBoard = $('#taskBoard');
-			$('#taskName', taskBoard).html(task.name);
-			$('#taskDistance', taskBoard).html((computeLength(task.getPath()) / 1000).toFixed(1) + 'km');
-			$('#taskShortestDistance', taskBoard).html((computeLength(shortestPath) / 1000).toFixed(1) + 'km');
-			$('#taskType', taskBoard).html(Task.TYPES[task.type]);
-			var count = 1;
-			$.each(task.turnpoints, function (i, turnpoint) {
-				var turnpointRow = $('#turnpointRow', taskBoard).clone().attr({id: null, class: i % 2 == 0 ? 'tbl-points-even' : 'tbl-points-odd'}).show();
-				var index;
-				if (i == 0) {
-					index = 'TO';
-				} else if (i == task.turnpoints.length - 1) {
-					index = 'GOAL';
-					++count;
-				} else if (turnpoint.attributes.hasOwnProperty('ss')) {
-					index = 'SS' + (turnpoint.attributes.hasOwnProperty('exit') ? ' (EXIT)' : '');
-				} else if (turnpoint.attributes.hasOwnProperty('es')) {
-					index = 'ES';
-					++count;
-				} else {
-					index = count;
-					++count;
-				}
-				$('#turnpointIndex', turnpointRow).html(index);
-				$('#turnpointId', turnpointRow).html(turnpoint.id);
-				$('#turnpointDescription', turnpointRow).html(turnpoint.description);
-				if (turnpoint.radius > 0) {
-					$('#turnpointRadius', turnpointRow).html(turnpoint.radius);
-				}
-				$('#turnpointRow', taskBoard).before(turnpointRow);
-			});
-			var infoWindow = new google.maps.InfoWindow({content: taskBoard.show().get(0)});
-			var taskBoardButton = $('#taskBoardButton').click(function () {
+			var task = new Task().parse('tsk ' + tsk, waypoints);
+			task.show(map);
+			var infoWindow = new google.maps.InfoWindow({content: task.getTaskBoardContent().get(0)});
+			var taskBoardButton = $('#taskBoardButton').clone().attr({id: null}).show().click(function () {
 				infoWindow.setPosition(new google.maps.LatLng(map.getBounds().getSouthWest().lat(), map.getCenter().lng()));
 				infoWindow.open(map);
-			}).show();
+			});
 			map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(taskBoardButton.get(0));
+			bounds = task.getBounds();
+			map.fitBounds(bounds);
 		});
 	} else {
 		$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
