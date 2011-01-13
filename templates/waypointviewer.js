@@ -331,7 +331,6 @@ $.extend(Task.prototype, {
 	},
 
 	show: function (map) {
-		var that = this;
 		var positions = [];
 		$.each(this.turnpoints, function (i, turnpoint) {
 			if (i == 0) {
