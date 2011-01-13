@@ -123,7 +123,7 @@ $.extend(Turnpoint.prototype, {
 						break;
 					}
 				}
-				if (that.id == null) {
+				if (that.id === null) {
 					that.errors.push('Invalid waypoint "' + token + '"');
 				}
 			} else {
