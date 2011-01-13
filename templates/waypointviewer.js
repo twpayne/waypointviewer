@@ -304,7 +304,7 @@ $(document).ready(function () {
 	var bounds = new google.maps.LatLngBounds();
 
 	if (tsk) {
-		var task = new Task().parse('tsk TASK race ' + tsk);
+		var task = new Task().parse('tsk ' + tsk);
 		$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
 			var waypoints = [];
 			$.each(geojson.features, function (i, feature) {
