@@ -3,18 +3,23 @@ var kml = '{{ kml|addslashes }}';
 var tsk = '{{ tsk|addslashes }}';
 var wpt = '{{ wpt|addslashes }}';
 
+var computeDistanceBetween = google.maps.geometry.spherical.computeDistanceBetween;
+var computeHeading = google.maps.geometry.spherical.computeHeading;
+var computeLength = google.maps.geometry.spherical.computeLength;
+var computeOffset = google.maps.geometry.spherical.computeOffset;
+
 /* http://www.movable-type.co.uk/scripts/latlong.html */
 function computeCrossTrackDistance(from, to, point, radius) {
 	radius = radius || 6378137;
-	var d13 = google.maps.geometry.spherical.computeDistanceBetween(from, point, radius);
-	var theta12 = google.maps.geometry.spherical.computeHeading(from, to);
-	var theta13 = google.maps.geometry.spherical.computeHeading(from, point);
+	var d13 = computeDistanceBetween(from, point, radius);
+	var theta12 = computeHeading(from, to);
+	var theta13 = computeHeading(from, point);
 	return radius * Math.asin(Math.sin(d13 / radius) * Math.sin(Math.PI * (theta13 - theta12) / 180));
 }
 
 function computeAlongTrackDistance(from, to, point, radius) {
 	radius = radius || 6378137;
-	var d13 = google.maps.geometry.spherical.computeDistanceBetween(from, point, radius);
+	var d13 = computeDistanceBetween(from, point, radius);
 	var dxt = computeCrossTrackDistance(from, to, point, radius);
 	return radius * Math.acos(Math.cos(d13 / radius) / Math.cos(dxt / radius));
 }
@@ -225,7 +230,7 @@ $.extend(Task.prototype, {
 						break;
 					}
 				}
-				if (google.maps.geometry.spherical.computeDistanceBetween(previous.center, point.center, R) < previous.radius) {
+				if (computeDistanceBetween(previous.center, point.center, R) < previous.radius) {
 					previous.include = false;
 				}
 			}
@@ -242,25 +247,25 @@ $.extend(Task.prototype, {
 					var crossTrackDistance = computeCrossTrackDistance(points[i - 1].position, points[i + 1].position, point.center, R);
 					if (Math.abs(crossTrackDistance) < point.radius) {
 						var alongTrackDistance = computeAlongTrackDistance(points[i - 1].position, points[i + 1].position, point.center, R);
-						var heading = google.maps.geometry.spherical.computeHeading(points[i - 1].position, points[i + 1].position);
-						point.position = google.maps.geometry.spherical.computeOffset(points[i - 1].position, alongTrackDistance, heading, R);
+						var heading = computeHeading(points[i - 1].position, points[i + 1].position);
+						point.position = computeOffset(points[i - 1].position, alongTrackDistance, heading, R);
 					} else {
-						var heading1 = google.maps.geometry.spherical.computeHeading(point.position, points[i - 1].position);
-						var heading2 = google.maps.geometry.spherical.computeHeading(point.position, points[i + 1].position);
+						var heading1 = computeHeading(point.position, points[i - 1].position);
+						var heading2 = computeHeading(point.position, points[i + 1].position);
 						var heading = (heading1 + heading2) / 2 + (Math.abs(heading1 - heading2) > 180 ? 180 : 0);
-						point.position = google.maps.geometry.spherical.computeOffset(point.center, point.radius, heading, R);
+						point.position = computeOffset(point.center, point.radius, heading, R);
 					}
 				}
 			}
 			if (points[points.length - 1].radius > 0) {
 				var point = points[points.length - 1];
-				var heading = google.maps.geometry.spherical.computeHeading(point.position, points[points.length - 2].position);
-				point.position = google.maps.geometry.spherical.computeOffset(point.center, point.radius, heading, R);
+				var heading = computeHeading(point.position, points[points.length - 2].position);
+				point.position = computeOffset(point.center, point.radius, heading, R);
 			}
 			var path = $.map(points, function (point, i) {
 				return point.include ? point.position : null;
 			});
-			var length = google.maps.geometry.spherical.computeLength(path);
+			var length = computeLength(path);
 			if (bestLength) {
 				if (length < bestLength) {
 					bestLength = length;
@@ -338,12 +343,12 @@ $(document).ready(function () {
 						color = '#ffff00';
 					}
 					if (turnpoint.attributes.hasOwnProperty('gl')) {
-						var heading = google.maps.geometry.spherical.computeHeading(turnpoint.position, positions[positions.length - 2]);
+						var heading = computeHeading(turnpoint.position, positions[positions.length - 2]);
 						var polyline = new google.maps.Polyline({
 							map: map,
 							path: [
-								google.maps.geometry.spherical.computeOffset(turnpoint.position, turnpoint.radius, heading - 90, R),
-								google.maps.geometry.spherical.computeOffset(turnpoint.position, turnpoint.radius, heading + 90, R)
+								computeOffset(turnpoint.position, turnpoint.radius, heading - 90, R),
+								computeOffset(turnpoint.position, turnpoint.radius, heading + 90, R)
 							],
 							strokeColor: color,
 							strokeOpacity: 1,
@@ -374,8 +379,8 @@ $(document).ready(function () {
 			});
 			map.fitBounds(bounds);
 			var taskBoard = $('#taskBoard');
-			$('#distance', taskBoard).html((google.maps.geometry.spherical.computeLength(task.getPath()) / 1000).toFixed(1) + 'km');
-			$('#shortestDistance', taskBoard).html((google.maps.geometry.spherical.computeLength(shortestPath) / 1000).toFixed(1) + 'km');
+			$('#distance', taskBoard).html((computeLength(task.getPath()) / 1000).toFixed(1) + 'km');
+			$('#shortestDistance', taskBoard).html((computeLength(shortestPath) / 1000).toFixed(1) + 'km');
 			$('#type', taskBoard).html(Task.TYPES[task.type]);
 			var count = 1;
 			$.each(task.turnpoints, function (i, turnpoint) {
