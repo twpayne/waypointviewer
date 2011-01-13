@@ -133,20 +133,21 @@ $.extend(Turnpoint.prototype, {
 function Task() {
 	this.name = null;
 	this.type = null;
-	this.wo = null;
-	this.wc = null;
-	this.so = null;
-	this.sl = null;
-	this.sc = null;
-	this.gc = null;
-	this.tc = null;
-	this.cs = null;
+	this.windowOpen = null;
+	this.windowClose = null;
+	this.startOpen = null;
+	this.startLast = null;
+	this.startClose = null;
+	this.goalClose = null;
+	this.taskClose = null;
+	this.clockStart = null;
 	this.turnpoints = [];
 	this.errors = [];
 }
 
 $.extend(Task, {
-	BASE_TIME: {wc: 'wo', so: 'wo', sl: 'so', sc: 'so', gc: 'wo', tc: 'wo'},
+	BASE_TIME: {wc: 'windowOpen', so: 'windowOpen', sl: 'windowOpen', sc: 'windowOpen', gc: 'windowOpen', tc: 'windowOpen'},
+	TIME_NAME: {wo: 'windowOpen', wc: 'windowClose', so: 'startOpen', sl: 'startLast', sc: 'startClose', gc: 'goalClose', tc: 'taskClose'},
 	TYPES: {race: 'Race To Goal', open: 'Open Distance', elap: 'Elapsed Time', head: 'Headed Open Distance'}
 });
 
@@ -173,15 +174,16 @@ $.extend(Task.prototype, {
 				token = token.toLowerCase();
 				/* FIXME handle cs */
 				if (token.match(/^(wo)(\d\d)(\d\d)$/)) {
-					that.wo = 60 * parseInt(RegExp.$2) + parseInt(RegExp.$3);
+					that.windowOpen = 60 * parseInt(RegExp.$2) + parseInt(RegExp.$3);
 				} else if (token.match(/^(wc|so|sl|sc|gc|tc)(\+)?(\d?\d)?(\d\d)$/)) {
-					that[RegExp.$1] = (RegExp.$2 ? that[Task.BASE_TIME[RegExp.$1]] : 0) + (RegExp.$3 ? 60 * parseInt(RegExp.$3) : 0) + parseInt(RegExp.$4);
+					var time = Task.TIME_NAME[RegExp.$1];
+					that[time] = (RegExp.$3 ? 60 * parseInt(RegExp.$3) : 0) + parseInt(RegExp.$4);
 					if (RegExp.$2) {
 						var base_time = that[Task.BASE_TIME[RegExp.$1]];
 						if (base_time != null) {
-							that[RegExp.$1] += base_time;
+							that[time] += base_time;
 						} else {
-							that.errors.push('Cannot specify relative time "' + token + '" when "' + Task.BASE_TIME[RegExp.$1] + '" is not set');
+							that.errors.push('Cannot specify relative time "' + time + '" when "' + Task.BASE_TIME[RegExp.$1] + '" is not set');
 						}
 					}
 				} else {
