@@ -388,15 +388,12 @@ $.extend(Task.prototype, {
 });
 
 $(function () {
-
 	var fullScreenButton, kmlLayer, map, options;
-
 	options = {
 		disableDoubleClickZoom: true,
 		mapTypeId: google.maps.MapTypeId.TERRAIN,
 		streetViewControl: false
 	};
-
 	if (top.location !== self.location) {
 		$.extend(options, {
 			mapTypeControlOptions: {
@@ -407,16 +404,13 @@ $(function () {
 			}
 		});
 	}
-
 	map = new google.maps.Map($('#map').get(0), options);
-
 	if (top.location !== self.location) {
 		fullScreenButton = $('#fullScreenButton').clone().attr({id: null}).show().click(function () {
 			top.location = self.location.href;
 		});
 		map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(fullScreenButton.get(0));
 	}
-
 	$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
 		var bounds, infoWindow, task, taskBoardButton, waypoints;
 		waypoints = $.map(geojson.features, function (feature, i) {
@@ -444,12 +438,10 @@ $(function () {
 			map.fitBounds(bounds);
 		});
 	});
-
 	if (kml) {
 		kmlLayer = new google.maps.KmlLayer(kml, {
 			map: map,
 			preserveViewport: true
 		});
 	}
-
 });
