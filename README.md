@@ -14,7 +14,7 @@ Waypoint examples:
 
 Task examples:
 
-* [French Championships 2010](http://waypointviewer.appspot.com/?title=French+Championships+2010+Task+1&wpt=http://parapente.ffvl.fr/compet/1405/balises&tsk=D01+B45.SS.R12K+B45+B88+B01+B75+B70+A02.ES+A02.R200)
+* [French Championships 2010](http://waypointviewer.appspot.com/?title=French+Championships+2010&wpt=http://parapente.ffvl.fr/compet/1405/balises&tsk=T1.1+RACE+D01+B45.SS.R12K+B45+B88+B01+B75+B70+A02.ES+A02.R200)
 
 Waypoint Viewer accepts four parameters in the query string:
 
@@ -42,7 +42,7 @@ followed by `.SS` (to indicate the start of the speed section), `.ES` (to
 indicate the end of the speed section), `.R400` (to set the radius in meters),
 and/or `.R10K` (to set the radius in kilometers).  For example:
 
-	D01+B10.SS.R5K+B10+B20+B30+A01.ES.R1K+A01
+	TASK+RACE+D01+B10.SS.R5K+B10+B20+B30+A01.ES.R1K+A01
 
 
 Copyright
