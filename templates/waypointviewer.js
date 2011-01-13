@@ -162,7 +162,7 @@ $.extend(Task.prototype, {
 			var base_time, time, turnpoint;
 			if (i === 0) {
 				token = token.toLowerCase();
-				if (token != 'tsk') {
+				if (token !== 'tsk') {
 					that.errors.push('Invalid task header "' + token + '"');
 				}
 			} else if (i === 1) {
@@ -184,7 +184,7 @@ $.extend(Task.prototype, {
 					that[time] = (RegExp.$3 ? 60 * parseInt(RegExp.$3, 10) : 0) + parseInt(RegExp.$4, 10);
 					if (RegExp.$2) {
 						base_time = that[Task.BASE_TIME[RegExp.$1]];
-						if (base_time != null) {
+						if (base_time !== null) {
 							that[time] += base_time;
 						} else {
 							that.errors.push('Cannot specify relative time "' + time + '" when "' + Task.BASE_TIME[RegExp.$1] + '" is not set');
@@ -200,7 +200,7 @@ $.extend(Task.prototype, {
 			}
 		});
 		for (i = 0; i < this.turnpoints.length - 1; i += 1) {
-			if (this.turnpoints[i].attributes.hasOwnProperty('ss') && this.turnpoints[i].name != this.turnpoints[i + 1].name) {
+			if (this.turnpoints[i].attributes.hasOwnProperty('ss') && this.turnpoints[i].name !== this.turnpoints[i + 1].name) {
 				this.turnpoints[i].attributes.exit = true;
 				break;
 			}
@@ -345,7 +345,7 @@ $.extend(Task.prototype, {
 			if (i === 0) {
 				positions.push(turnpoint.position);
 			} else {
-				if (turnpoint.position != positions[positions.length - 1]) {
+				if (turnpoint.position !== positions[positions.length - 1]) {
 					positions.push(turnpoint.position);
 				}
 				if (turnpoint.attributes.hasOwnProperty('ss')) {
@@ -402,7 +402,7 @@ $(function () {
 		streetViewControl: false
 	};
 
-	if (top.location != self.location) {
+	if (top.location !== self.location) {
 		$.extend(options, {
 			mapTypeControlOptions: {
 				style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
@@ -415,7 +415,7 @@ $(function () {
 
 	map = new google.maps.Map($('#map').get(0), options);
 
-	if (top.location != self.location) {
+	if (top.location !== self.location) {
 		fullScreenButton = $('#fullScreenButton').clone().attr({id: null}).show().click(function () {
 			top.location = self.location.href;
 		});
