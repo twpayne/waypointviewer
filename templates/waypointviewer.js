@@ -308,8 +308,11 @@ $.extend(Task.prototype, {
 		$('#taskShortestDistance', taskBoardContent).html((this.shortestPathLength / 1000).toFixed(1) + 'km');
 		$('#taskType', taskBoardContent).html(Task.TYPES[this.type]);
 		$('#taskWindowOpen', taskBoardContent).html(formatTime(this.windowOpen));
-		$('#taskStartOpen', taskBoardContent).html(formatTime(this.startOpen));
 		$('#taskWindowClose', taskBoardContent).html(formatTime(this.windowClose));
+		$('#taskStartOpen', taskBoardContent).html(formatTime(this.startOpen));
+		$('#taskStartLast', taskBoardContent).html(formatTime(this.startLast));
+		$('#taskStartClose', taskBoardContent).html(formatTime(this.startClose));
+		$('#taskGoalClose', taskBoardContent).html(formatTime(this.goalClose));
 		$('#taskTaskClose', taskBoardContent).html(formatTime(this.taskClose));
 		count = 1;
 		$.each(this.turnpoints, function (i, turnpoint) {
