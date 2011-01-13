@@ -387,13 +387,12 @@ $(document).ready(function () {
 		map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(fullScreen.get(0));
 	}
 
-	var bounds = new google.maps.LatLngBounds();
-
-	if (tsk) {
-		$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
-			var waypoints = $.map(geojson.features, function (feature, i) {
-				return new Waypoint(feature);
-			});
+	$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
+		var bounds = null;
+		var waypoints = $.map(geojson.features, function (feature, i) {
+			return new Waypoint(feature);
+		});
+		if (tsk) {
 			var task = new Task().parse('tsk ' + tsk, waypoints);
 			task.show(map);
 			var infoWindow = new google.maps.InfoWindow({content: task.getTaskBoardContent().get(0)});
@@ -403,18 +402,18 @@ $(document).ready(function () {
 			});
 			map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(taskBoardButton.get(0));
 			bounds = task.getBounds();
-			map.fitBounds(bounds);
-		});
-	} else {
-		$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
-			$.each(geojson.features, function (i, feature) {
-				var waypoint = new Waypoint(feature);
+		} else {
+			bounds = new google.maps.LatLngBounds();
+			$.each(waypoints, function (i, waypoint) {
 				waypoint.show(map);
 				bounds.extend(waypoint.position);
 			});
+		}
+		map.fitBounds(bounds);
+		google.maps.event.addListener(map, 'dblclick', function () {
 			map.fitBounds(bounds);
 		});
-	}
+	});
 
 	if (kml) {
 		var kmlLayer = new google.maps.KmlLayer(kml, {
@@ -422,9 +421,5 @@ $(document).ready(function () {
 			preserveViewport: true
 		});
 	}
-
-	google.maps.event.addListener(map, 'dblclick', function () {
-		map.fitBounds(bounds);
-	});
 
 });
