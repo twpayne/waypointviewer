@@ -297,6 +297,10 @@ $.extend(Task.prototype, {
 		$('#taskDistance', taskBoardContent).html((this.pathLength / 1000).toFixed(1) + 'km');
 		$('#taskShortestDistance', taskBoardContent).html((this.shortestPathLength / 1000).toFixed(1) + 'km');
 		$('#taskType', taskBoardContent).html(Task.TYPES[this.type]);
+		$('#taskWindowOpen', taskBoardContent).html(formatTime(this.windowOpen));
+		$('#taskStartOpen', taskBoardContent).html(formatTime(this.startOpen));
+		$('#taskWindowClose', taskBoardContent).html(formatTime(this.windowClose));
+		$('#taskTaskClose', taskBoardContent).html(formatTime(this.taskClose));
 		var count = 1;
 		$.each(this.turnpoints, function (i, turnpoint) {
 			var turnpointRow = $('#turnpointRow', taskBoardContent).clone().attr({id: null, class: i % 2 == 0 ? 'tbl-points-even' : 'tbl-points-odd'}).show();
