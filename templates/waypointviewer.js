@@ -111,7 +111,7 @@ $.extend(Turnpoint.prototype, {
 				if (Turnpoint.ATTRIBUTES.hasOwnProperty(token)) {
 					that.attributes[token] = true;
 				} else if (token.match(/^r(\d+)(k?)$/)) {
-					that.radius = (RegExp.$2 ? 1000 : 1) * parseInt(RegExp.$1);
+					that.radius = (RegExp.$2 ? 1000 : 1) * parseInt(RegExp.$1, 10);
 				} else {
 					that.errors.push('Invalid token "' + token + '"');
 				}
@@ -174,10 +174,10 @@ $.extend(Task.prototype, {
 				token = token.toLowerCase();
 				/* FIXME handle cs */
 				if (token.match(/^(wo)(\d\d)(\d\d)$/)) {
-					that.windowOpen = 60 * parseInt(RegExp.$2) + parseInt(RegExp.$3);
+					that.windowOpen = 60 * parseInt(RegExp.$2, 10) + parseInt(RegExp.$3, 10);
 				} else if (token.match(/^(wc|so|sl|sc|gc|tc)(\+)?(\d?\d)?(\d\d)$/)) {
 					var time = Task.TIME_NAME[RegExp.$1];
-					that[time] = (RegExp.$3 ? 60 * parseInt(RegExp.$3) : 0) + parseInt(RegExp.$4);
+					that[time] = (RegExp.$3 ? 60 * parseInt(RegExp.$3, 10) : 0) + parseInt(RegExp.$4, 10);
 					if (RegExp.$2) {
 						var base_time = that[Task.BASE_TIME[RegExp.$1]];
 						if (base_time != null) {
