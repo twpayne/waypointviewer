@@ -20,36 +20,36 @@
 				<img src="static/taskboard.png" height="13" width="13"/>
 			</div>
 		</div>
-		<div id="richMarker" class="richMarker" style="display: none">
-			<span id="label"></span>
-		</div>
-		<div id="infoWindow" class="infoWindow" style="display: none">
+		<div id="waypointInfoWindowContent" class="waypointInfoWindowContent" style="display: none">
 			<table>
 				<tr>
 					<th>ID:</th>
-					<td><span id="id"></span></td>
+					<td id="waypointIdValue"></td>
 				</tr>
-				<tr>
+				<tr id="waypointDescription">
 					<th>Description:</th>
-					<td><span id="description"></span></td>
+					<td id="waypointDescriptionValue"></td>
 				</tr>
 				<tr>
 					<th>Latitude:</th>
-					<td><span id="lat"></span>&deg;</td>
+					<td id="waypointLatitudeValue"></td>
 				</tr>
 				<tr>
 					<th>Longitude:</th>
-					<td><span id="lng"></span>&deg;</td>
+					<td id="waypointLongitudeValue"></td>
 				</tr>
-				<tr>
+				<tr id="waypointElevation">
 					<th>Elevation:</th>
-					<td><span id="elevation"></span>m</td>
+					<td id="waypointElevationValue"></td>
 				</tr>
-				<tr>
+				<tr id="waypointRadius">
 					<th>Radius:</th>
-					<td><span id="radius"></span>m</td>
+					<td id="waypointRadiusValue"></td>
 				</tr>
 			</table>
+		</div>
+		<div id="waypointRichMarkerContent" class="waypointRichMarkerContent" style="display: none">
+			<span id="waypointLabel"></span>
 		</div>
 		<div id="taskBoard" class="taskBoard" style="display: none">
 			<div class="tsk-top">

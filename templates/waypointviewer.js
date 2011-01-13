@@ -24,70 +24,66 @@ function computeAlongTrackDistance(from, to, point, radius) {
 	return radius * Math.acos(Math.cos(d13 / radius) / Math.cos(dxt / radius));
 }
 
-function Waypoint(options) {
-
-	var that = this;
-
-	this.set('id', options.id);
-	this.set('position', options.position);
-	this.set('elevation', options.elevation);
-	this.set('description', options.description);
-	this.set('radius', options.radius);
-	this.set('color', options.color);
-	this.set('map', options.map);
-
-	var richMarkerContent = $('#richMarker').clone().attr({id: null}).show();
-	richMarkerContent.css('background-color', '#' + this.get('color'));
-	var label = this.get('id');
-	var match = /^([A-Z][0-9]{2})([0-9]{3})$/.exec(this.get('id'));
-	if (match && 10 * (match[2] - 1) <= this.get('elevation') && this.get('elevation') <= 10 * (match[2] + 1)) {
-		label = match[1];
-	}
-	$('#label', richMarkerContent).html(label);
-	var marker = new RichMarker({
-		anchor: RichMarkerPosition.MIDDLE,
-		content: richMarkerContent.get(0),
-		flat: true,
-		map: this.get('map')
-	});
-	marker.bindTo('position', this);
-	marker.bindTo('map', this);
-	this.set('marker', marker);
-
-	var circle = new google.maps.Circle({
-		clickable: false,
-		fillOpacity: 0.25,
-		strokeOpacity: 1,
-		strokeWeight: 1
-	});
-	circle.bindTo('center', this, 'position');
-	circle.bindTo('fillColor', this, 'color');
-	circle.bindTo('radius', this);
-	circle.bindTo('strokeColor', this, 'color');
-	circle.bindTo('map', this);
-
-	var infoWindowContent = $('#infoWindow').clone().attr({id: null}).show();
-	$('#id', infoWindowContent).html(this.get('id'));
-	$('#lat', infoWindowContent).html(this.get('position').lat());
-	$('#lng', infoWindowContent).html(this.get('position').lng());
-	$('#elevation', infoWindowContent).html(this.get('elevation'));
-	$('#description', infoWindowContent).html(this.get('description'));
-	$('#radius', infoWindowContent).html(this.get('radius'));
-	var infoWindow = new google.maps.InfoWindow({content: infoWindowContent.get(0)});
-	this.set('infoWindow', infoWindow);
-
-	google.maps.event.addListener(marker, 'click', function () {
-		that.get('infoWindow').open(that.get('map'), that.get('marker'));
-	});
-
-	google.maps.event.addListener(marker, 'dblclick', function () {
-		that.get('map').panTo(that.get('position'));
-		that.get('map').setZoom(15);
-	});
-
+function Waypoint(feature) {
+	this.color = feature.properties.hasOwnProperty('color') ? '#' + feature.properties.color : '#ffff00';
+	this.description = feature.properties.hasOwnProperty('description') ? feature.properties.description : null;
+	this.elevation = feature.geometry.coordinates.length > 2 ? feature.geometry.coordinates[2] : null;
+	this.id = feature.properties.id;
+	this.radius = feature.properties.hasOwnProperty('radius') ? feature.properties.radius : null;
+	this.position = new google.maps.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
 }
 
-Waypoint.prototype = new google.maps.MVCObject();
+$.extend(Waypoint.prototype, {
+
+	show: function (map) {
+		var richMarkerContent = $('#waypointRichMarkerContent').clone().attr({id: null}).css('background-color', this.color).show();
+		$('#waypointLabel', richMarkerContent).html(this.id.match(/^([A-Z][0-9]{2})([0-9]{3})$/) && 10 * (RegExp.$2 - 1) <= this.elevation && this.elevation <= 10 * (RegExp.$2 + 1) ? RegExp.$1 : this.id);
+		var marker = new RichMarker({
+			anchor: RichMarkerPosition.MIDDLE,
+			content: richMarkerContent.get(0),
+			flat: true,
+			map: map,
+			position: this.position
+		});
+		if (this.radius) {
+			var circle = new google.maps.Circle({
+				clickable: false,
+				fillColor: this.color,
+				fillOpacity: 0.25,
+				radius: this.radius,
+				strokeOpacity: 1,
+				strokeWeight: 1
+			});
+			circle.bindTo('center', marker, 'position');
+			circle.bindTo('strokeColor', circle, 'fillColor');
+			circle.bindTo('map', marker);
+		}
+		var infoWindowContent = $('#waypointInfoWindowContent').clone().attr({id: null}).show();
+		$('#waypointIdValue', infoWindowContent).html(this.id);
+		$('#waypointLatitudeValue', infoWindowContent).html(this.position.lat().toFixed(5) + '&deg;');
+		$('#waypointLongitudeValue', infoWindowContent).html(this.position.lng().toFixed(5) + '&deg;');
+		if (this.elevation) {
+			$('#waypointElevationValue', infoWindowContent).html(this.elevation.toFixed() + 'm');
+		} else {
+			$('#waypointElevation', infoWindowContent).hide();
+		}
+		if (this.description) {
+			$('#waypointDescriptionValue', infoWindowContent).html(this.description);
+		} else {
+			$('#waypointDescription', infoWindowContent).hide();
+		}
+		if (this.radius) {
+			$('#waypointRadiusValue', infoWindowContent).html(this.radius + 'm');
+		} else {
+			$('#waypointRadius', infoWindowContent).hide();
+		}
+		var infoWindow = new google.maps.InfoWindow({content: infoWindowContent.get(0)});
+		google.maps.event.addListener(marker, 'click', function () {
+			infoWindow.open(map, marker);
+		});
+	}
+
+});
 
 function Turnpoint() {
 	this.name = null;
@@ -306,24 +302,8 @@ $(document).ready(function () {
 	if (tsk) {
 		var task = new Task().parse('tsk ' + tsk);
 		$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
-			var waypoints = [];
-			$.each(geojson.features, function (i, feature) {
-				var waypoint = {
-					description: '',
-					elevation: 0,
-					id: feature.properties.id,
-					position: new google.maps.LatLng(
-						feature.geometry.coordinates[1],
-						feature.geometry.coordinates[0]
-					),
-				};
-				if (feature.properties.hasOwnProperty('description')) {
-					waypoint.description = feature.properties.description;
-				}
-				if (feature.geometry.coordinates.length > 2) {
-					waypoint.elevation = feature.geometry.coordinates[2];
-				}
-				waypoints.push(waypoint);
+			var waypoints = $.map(geojson.features, function (feature, i) {
+				return new Waypoint(feature);
 			});
 			task.computePositions(waypoints);
 			var positions = [];
@@ -419,28 +399,9 @@ $(document).ready(function () {
 	} else {
 		$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
 			$.each(geojson.features, function (i, feature) {
-				var options = {
-					color: 'ffff00',
-					description: '',
-					elevation: 0,
-					id: feature.properties.id,
-					map: map,
-					position: new google.maps.LatLng(
-						feature.geometry.coordinates[1],
-						feature.geometry.coordinates[0]
-					),
-					radius: 400
-				};
-				$.each(['color', 'description', 'radius'], function (j, property) {
-					if (feature.properties.hasOwnProperty(property)) {
-						options[property] = feature.properties[property];
-					}
-				});
-				if (feature.geometry.coordinates.length > 2) {
-					options.elevation = feature.geometry.coordinates[2];
-				}
-				var waypoint = new Waypoint(options);
-				bounds.extend(options.position);
+				var waypoint = new Waypoint(feature);
+				waypoint.show(map);
+				bounds.extend(waypoint.position);
 			});
 			map.fitBounds(bounds);
 		});

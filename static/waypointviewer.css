@@ -31,16 +31,16 @@ body {
 	-webkit-user-select: none;
 }
 
-.infoWindow table {
+.waypointInfoWindowContent table {
 	font-family: verdana, sans-serif;
 	font-size: 7pt;
 }
 
-.infoWindow th {
+.waypointInfoWindowContent th {
 	text-align: right;
 }
 
-.richMarker {
+.waypointRichMarkerContent {
 	border-radius: 3px;
 	border-style: solid;
 	border-width: 1px;
