@@ -347,7 +347,7 @@ $.extend(Task.prototype, {
 		var positions, shortestPathOverlay;
 		positions = [];
 		$.each(this.turnpoints, function (i, turnpoint) {
-			var color, heading, overlay;
+			var color, heading, infoWindow, overlay, turnpointInfoWindowContent;
 			if (i === 0) {
 				positions.push(turnpoint.position);
 			} else {
@@ -385,6 +385,15 @@ $.extend(Task.prototype, {
 						strokeWeight: 1
 					});
 				}
+				turnpointInfoWindowContent = $('#turnpointInfoWindowContent').clone().attr({id: null}).show();
+				$('#turnpointId', turnpointInfoWindowContent).html(turnpoint.id);
+				$('#turnpointRadius', turnpointInfoWindowContent).html(turnpoint.radius);
+				$('#turnpointLatitude', turnpointInfoWindowContent).html(turnpoint.position.lat());
+				$('#turnpointLongitude', turnpointInfoWindowContent).html(turnpoint.position.lng());
+				infoWindow = new google.maps.InfoWindow({content: turnpointInfoWindowContent.get(0), position: turnpoint.position});
+				google.maps.event.addListener(overlay, 'click', function () {
+					infoWindow.open(map);
+				});
 			}
 		});
 		shortestPathOverlay = new google.maps.Polyline({
