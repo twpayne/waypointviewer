@@ -45,6 +45,14 @@ and/or `.R10K` (to set the radius in kilometers).  For example:
 	TASK+RACE+D01+B10.SS.R5K+B10+B20+B30+A01.ES.R1K+A01
 
 
+Embedding maps in your web pages
+--------------------------------
+
+Waypoint Viewer makes it easy to embed waypoint and task maps in your webpages, using an `<IFRAME>` tag, for example:
+
+	<iframe width="300px" height="300px" src="http://waypointviewer.appspot.com/?title=French+Championships+2010&wpt=http://parapente.ffvl.fr/compet/1405/balises&tsk=T1.1+RACE+D01+B45.SS.R12K+B45+B88+B01+B75+B70+A02.ES+A02.R200"></iframe>
+
+
 Copyright
 ---------
 
