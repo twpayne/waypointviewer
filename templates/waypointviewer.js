@@ -50,6 +50,9 @@ $.extend(Waypoint.prototype, {
 		color = this.color && this.color !== '#000000' ? this.color : '#ffff00';
 		label = this.id.match(/^([A-Z][0-9]{2})([0-9]{3})$/) && 10 * (RegExp.$2 - 1) <= this.elevation && this.elevation <= 10 * (RegExp.$2 + 1) ? RegExp.$1 : this.id;
 		$('#waypointLabel', richMarkerContent).css('background-color', color).html(label);
+		if (this.description) {
+			richMarkerContent.attr({title: this.description});
+		}
 		marker = new RichMarker({
 			anchor: RichMarkerPosition.BOTTOM,
 			content: richMarkerContent.get(0),
