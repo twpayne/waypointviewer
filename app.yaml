@@ -23,6 +23,7 @@ skip_files:
 - ^(.*/)?\..*
 - ^COPYING$
 - ^README.md$
+- ^TODO$
 - ^Makefile$
 - ^app\.yaml$
 - ^static/.*\.pbm$
