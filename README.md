@@ -14,7 +14,9 @@ Waypoint examples:
 
 Task examples:
 
-* [French Championships 2010](http://waypointviewer.appspot.com/?title=French+Championships+2010&wpt=http://parapente.ffvl.fr/compet/1405/balises&tsk=T1.1+RACE+D01+B45.SS.R12K+B45+B88+B01+B75+B70+A02.ES+A02.R200)
+* [French Championships 2010 Task 1](http://waypointviewer.appspot.com/?title=French+Championships+2010&wpt=http://parapente.ffvl.fr/compet/1405/balises&tsk=T1.1+RACE+D01+B45.SS.R12K+B45+B88+B01+B75+B70+A02.ES+A02.R200)
+* [Paragliding World Cup Colombia 2011 Task 1](http://waypointviewer.appspot.com/?title=Paragliding+World+Cup+Colombia+2011&wpt=http://www.pottyplace.com/colombia.wpt&tsk=T1.1+RACE+D01+B76.SS.R10K+B21.R1K+B74.R4K+A04.ES.R1K+A04.R200)
+* [Paragliding World Cup Colombia 2011 Task 2](http://waypointviewer.appspot.com/?title=Paragliding+World+Cup+Colombia+2011&wpt=http://www.pottyplace.com/colombia.wpt&tsk=T1.2+RACE+D01+B58.SS.R30K+B58.R3K+B47.R3K+B17.R3K+A03.ES.R1K+A03.R200)
 
 Waypoint Viewer accepts four parameters in the query string:
 
