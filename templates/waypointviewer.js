@@ -34,7 +34,7 @@ function formatTime(i) {
 }
 
 function Waypoint(feature) {
-	this.color = feature.properties.hasOwnProperty('color') ? '#' + feature.properties.color : '#ffff00';
+	this.color = feature.properties.hasOwnProperty('color') && feature.properties.color != '000000' ? '#' + feature.properties.color : '#ffff00';
 	this.description = feature.properties.hasOwnProperty('description') ? feature.properties.description : null;
 	this.elevation = feature.geometry.coordinates.length > 2 ? feature.geometry.coordinates[2] : null;
 	this.id = feature.properties.id;
