@@ -200,14 +200,15 @@ var Task, Turnpoint, Waypoint;
 							heading = computeHeading(path[j - 1], path[j + 1]);
 							path[j] = computeOffset(path[j - 1], alongTrackDistance, heading, radius);
 							if (computeDistanceBetween(path[j], points[j].center, radius) > points[j].radius) {
+								/* FIXME heading1 and heading2 should (probably) be calculated relative to path[i] but this seems to cause numerical stability problems */
 								heading1 = computeHeading(points[j].center, path[j - 1]);
 								heading2 = computeHeading(points[j].center, path[j + 1]);
 								heading = (heading1 + heading2) / 2 + (Math.abs(heading1 - heading2) > 180 ? 180 : 0);
 								path[j] = computeOffset(points[j].center, points[j].radius, heading, radius);
 							}
 						} else {
-							heading1 = computeHeading(points[j].center, path[j - 1]);
-							heading2 = computeHeading(points[j].center, path[j + 1]);
+							heading1 = computeHeading(path[j], path[j - 1]);
+							heading2 = computeHeading(path[j], path[j + 1]);
 							heading = (heading1 + heading2) / 2 + (Math.abs(heading1 - heading2) > 180 ? 180 : 0);
 							path[j] = computeOffset(points[j].center, points[j].radius, heading, radius);
 						}
