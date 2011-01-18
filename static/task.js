@@ -170,7 +170,7 @@ var Task, Turnpoint, Waypoint;
 		},
 
 		computeShortestPath: function (radius) {
-			var alongTrackDistance, crossTrackDistance, heading, heading1, heading2, i, length, path, points;
+			var alongTrackDistance, crossTrackDistance, heading, heading1, heading2, i, j, length, path, points;
 			points = $.map(this.turnpoints, function (turnpoint, i) {
 				return {
 					center: turnpoint.position,
@@ -200,25 +200,25 @@ var Task, Turnpoint, Waypoint;
 			});
 			this.shortestPath = null;
 			this.shortestPathLength = null;
-			while (true) {
-				for (i = 1; i < points.length - 1; i += 1) {
-					if (points[i].radius > 0) {
-						crossTrackDistance = computeCrossTrackDistance(path[i - 1], path[i + 1], points[i].center, radius);
-						if (Math.abs(crossTrackDistance) < points[i].radius) {
-							alongTrackDistance = computeAlongTrackDistance(path[i - 1], path[i + 1], points[i].center, radius);
-							heading = computeHeading(path[i - 1], path[i + 1]);
-							path[i] = computeOffset(path[i - 1], alongTrackDistance, heading, radius);
-							if (computeDistanceBetween(path[i], points[i].center, radius) > points[i].radius) {
-								heading1 = computeHeading(points[i].center, path[i - 1]);
-								heading2 = computeHeading(points[i].center, path[i + 1]);
+			for (i = 0; i < 8; i += 1) {
+				for (j = 1; j < points.length - 1; j += 1) {
+					if (points[j].radius > 0) {
+						crossTrackDistance = computeCrossTrackDistance(path[j - 1], path[j + 1], points[j].center, radius);
+						if (Math.abs(crossTrackDistance) < points[j].radius) {
+							alongTrackDistance = computeAlongTrackDistance(path[j - 1], path[j + 1], points[j].center, radius);
+							heading = computeHeading(path[j - 1], path[j + 1]);
+							path[j] = computeOffset(path[j - 1], alongTrackDistance, heading, radius);
+							if (computeDistanceBetween(path[j], points[j].center, radius) > points[j].radius) {
+								heading1 = computeHeading(points[j].center, path[j - 1]);
+								heading2 = computeHeading(points[j].center, path[j + 1]);
 								heading = (heading1 + heading2) / 2 + (Math.abs(heading1 - heading2) > 180 ? 180 : 0);
-								path[i] = computeOffset(points[i].center, points[i].radius, heading, radius);
+								path[j] = computeOffset(points[j].center, points[j].radius, heading, radius);
 							}
 						} else {
-							heading1 = computeHeading(points[i].center, path[i - 1]);
-							heading2 = computeHeading(points[i].center, path[i + 1]);
+							heading1 = computeHeading(points[j].center, path[j - 1]);
+							heading2 = computeHeading(points[j].center, path[j + 1]);
 							heading = (heading1 + heading2) / 2 + (Math.abs(heading1 - heading2) > 180 ? 180 : 0);
-							path[i] = computeOffset(points[i].center, points[i].radius, heading, radius);
+							path[j] = computeOffset(points[j].center, points[j].radius, heading, radius);
 						}
 					}
 				}
@@ -227,14 +227,7 @@ var Task, Turnpoint, Waypoint;
 					path[points.length - 1] = computeOffset(points[points.length - 1].center, points[points.length - 1].radius, heading, radius);
 				}
 				length = computeLength(path, radius);
-				if (this.shortestPathLength) {
-					if (length < this.shortestPathLength) {
-						this.shortestPath = path;
-						this.shortestPathLength = length;
-					} else {
-						break;
-					}
-				} else {
+				if (i === 0 || length < this.shortestPathLength) {
 					this.shortestPath = path;
 					this.shortestPathLength = length;
 				}
