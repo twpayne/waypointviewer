@@ -17,3 +17,13 @@ handlers:
 
 - url: /.*
   script: waypointviewer.py
+
+skip_files:
+- ^(.*/)?.*\.py[co]$
+- ^(.*/)?\..*
+- ^COPYING$
+- ^README.md$
+- ^Makefile$
+- ^app\.yaml$
+- ^static/.*\.pbm$
+- ^tests$
