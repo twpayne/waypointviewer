@@ -363,7 +363,7 @@ $.extend(Task.prototype, {
 					positions.push(turnpoint.position);
 				}
 				if (turnpoint.attributes.hasOwnProperty('ss')) {
-					color = '#00ff00';
+					color = '#7fff00';
 				} else if (turnpoint.attributes.hasOwnProperty('es')) {
 					color = '#ff0000';
 				} else {
@@ -407,7 +407,7 @@ $.extend(Task.prototype, {
 		shortestPathOverlay = new google.maps.Polyline({
 			map: map,
 			path: this.shortestPath,
-			strokeColor: '#ffff00',
+			strokeColor: '#ff7f00',
 			strokeOpacity: 1,
 			strokeWeight: 2
 		});
