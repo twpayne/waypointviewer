@@ -46,10 +46,10 @@ $.extend(Waypoint.prototype, {
 
 	show: function (map) {
 		var circle, infoWindow, infoWindowContent, marker, richMarkerContent;
-		richMarkerContent = $('#waypointRichMarkerContent').clone().attr({id: null}).css('background-color', this.color).show();
-		$('#waypointLabel', richMarkerContent).html(this.id.match(/^([A-Z][0-9]{2})([0-9]{3})$/) && 10 * (RegExp.$2 - 1) <= this.elevation && this.elevation <= 10 * (RegExp.$2 + 1) ? RegExp.$1 : this.id);
+		richMarkerContent = $('#waypointRichMarkerContent').clone().attr({id: null}).show();
+		$('#waypointLabel', richMarkerContent).css('background-color', this.color).html(this.id.match(/^([A-Z][0-9]{2})([0-9]{3})$/) && 10 * (RegExp.$2 - 1) <= this.elevation && this.elevation <= 10 * (RegExp.$2 + 1) ? RegExp.$1 : this.id);
 		marker = new RichMarker({
-			anchor: RichMarkerPosition.MIDDLE,
+			anchor: RichMarkerPosition.BOTTOM,
 			content: richMarkerContent.get(0),
 			flat: true,
 			map: map,

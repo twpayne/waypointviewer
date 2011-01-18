@@ -1,5 +1,6 @@
 .PHONY: images
 images: \
+	static/arrow.png \
 	static/fullscreen.png \
 	static/taskboard.png
 
