@@ -30,15 +30,6 @@ var Task, Turnpoint, Waypoint;
 		return radius * Math.acos(Math.cos(d13 / radius) / Math.cos(dxt / radius));
 	}
 
-	Waypoint = function (feature) {
-		this.color = feature.properties.hasOwnProperty('color') ? '#' + feature.properties.color : null;
-		this.description = feature.properties.hasOwnProperty('description') ? feature.properties.description : null;
-		this.elevation = feature.geometry.coordinates.length > 2 ? feature.geometry.coordinates[2] : null;
-		this.id = feature.properties.id;
-		this.position = new google.maps.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
-		this.radius = feature.properties.hasOwnProperty('radius') ? feature.properties.radius : null;
-	};
-
 	Turnpoint = function () {
 		this.attributes = {};
 		this.description = null;
@@ -244,5 +235,14 @@ var Task, Turnpoint, Waypoint;
 		}
 
 	});
+
+	Waypoint = function (feature) {
+		this.color = feature.properties.hasOwnProperty('color') ? '#' + feature.properties.color : null;
+		this.description = feature.properties.hasOwnProperty('description') ? feature.properties.description : null;
+		this.elevation = feature.geometry.coordinates.length > 2 ? feature.geometry.coordinates[2] : null;
+		this.id = feature.properties.id;
+		this.position = new google.maps.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
+		this.radius = feature.properties.hasOwnProperty('radius') ? feature.properties.radius : null;
+	};
 
 })();
