@@ -40,7 +40,7 @@ var Task, Turnpoint, Waypoint;
 	};
 
 	$.extend(Turnpoint, {
-		ATTRIBUTES: {ss: true, es: true, gl: true}
+		ATTRIBUTES: {ss: true, es: true, exit: true, gl: true}
 	});
 
 	$.extend(Turnpoint.prototype, {
