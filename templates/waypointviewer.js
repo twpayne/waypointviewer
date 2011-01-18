@@ -267,8 +267,8 @@ $.extend(Task.prototype, {
 						heading = computeHeading(path[i - 1], path[i + 1]);
 						path[i] = computeOffset(path[i - 1], alongTrackDistance, heading, R);
 					} else {
-						heading1 = computeHeading(path[i], path[i - 1]);
-						heading2 = computeHeading(path[i], path[i + 1]);
+						heading1 = computeHeading(points[i].center, path[i - 1]);
+						heading2 = computeHeading(points[i].center, path[i + 1]);
 						heading = (heading1 + heading2) / 2 + (Math.abs(heading1 - heading2) > 180 ? 180 : 0);
 						path[i] = computeOffset(points[i].center, points[i].radius, heading, R);
 					}
