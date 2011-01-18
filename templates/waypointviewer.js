@@ -266,6 +266,12 @@ $.extend(Task.prototype, {
 						alongTrackDistance = computeAlongTrackDistance(path[i - 1], path[i + 1], points[i].center, R);
 						heading = computeHeading(path[i - 1], path[i + 1]);
 						path[i] = computeOffset(path[i - 1], alongTrackDistance, heading, R);
+						if (computeDistanceBetween(path[i], points[i].center) > points[i].radius) {
+							heading1 = computeHeading(points[i].center, path[i - 1]);
+							heading2 = computeHeading(points[i].center, path[i + 1]);
+							heading = (heading1 + heading2) / 2 + (Math.abs(heading1 - heading2) > 180 ? 180 : 0);
+							path[i] = computeOffset(points[i].center, points[i].radius, heading, R);
+						}
 					} else {
 						heading1 = computeHeading(points[i].center, path[i - 1]);
 						heading2 = computeHeading(points[i].center, path[i + 1]);
