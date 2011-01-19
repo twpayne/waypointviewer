@@ -16,7 +16,7 @@ handlers:
   static_dir: static
 
 - url: /.*
-  script: waypointviewer.py
+  script: main.py
 
 skip_files:
 - ^(.*/)?.*\.py[co]$
