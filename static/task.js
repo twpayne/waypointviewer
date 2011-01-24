@@ -92,7 +92,7 @@ var Task, Turnpoint, Waypoint;
 	};
 
 	$.extend(Task, {
-		REFERENCE_TIME: {wc: 'windowOpen', so: 'windowOpen', sl: 'windowOpen', sc: 'windowOpen', gc: 'windowOpen', tc: 'windowOpen'},
+		REFERENCE_TIME: {wc: 'windowOpen', so: 'windowOpen', sl: 'startOpen', sc: 'startOpen', gc: 'windowOpen', tc: 'windowOpen'},
 		TIME_NAME: {wo: 'windowOpen', wc: 'windowClose', so: 'startOpen', sl: 'startLast', sc: 'startClose', gc: 'goalClose', tc: 'taskClose'},
 		TYPES: {race: 'Race To Goal', open: 'Open Distance', elap: 'Elapsed Time', head: 'Headed Open Distance'}
 	});
