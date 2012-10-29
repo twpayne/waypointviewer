@@ -132,7 +132,8 @@ def feature_collection(lines, debug=False):
 
 
 if __name__ == '__main__':
+    import codecs
     import json
     import sys
-    fc = feature_collection(sys.stdin.readlines(), debug=True)
+    fc = feature_collection(codecs.getreader('iso-8859-1')(sys.stdin).readlines(), debug=True)
     print json.dumps(fc, indent=4, sort_keys=True)

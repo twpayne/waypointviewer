@@ -48,9 +48,10 @@ class Wpt2json(webapp.RequestHandler):
         debug = self.request.get('debug')
         wpt = self.request.get('wpt')
         response = fetch(wpt)
-        feature_collection = waypoint.feature_collection(response.content.splitlines(), debug=debug)
+        content = response.content.decode('latin_1')
+        feature_collection = waypoint.feature_collection(content.splitlines(), debug=debug)
         if debug:
-            feature_collection_properties['content'] = response.content
+            feature_collection_properties['content'] = content
             feature_collection_properties['content_was_truncated'] = response.content_was_truncated
             feature_collection_properties['final_url'] = response.final_url
             headers = dict((key, response.headers[key]) for key in response.headers)
