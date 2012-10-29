@@ -15,7 +15,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from django.utils import simplejson
+import json
 from google.appengine.api.urlfetch import fetch
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
@@ -60,14 +60,14 @@ class Wpt2json(webapp.RequestHandler):
         else:
             keywords = {}
         self.response.headers['content-type'] = 'application/json'
-        self.response.out.write(simplejson.dumps(feature_collection, **keywords))
+        self.response.out.write(json.dumps(feature_collection, **keywords))
 
 
-application = webapp.WSGIApplication([('/', MainPage), ('/waypointviewer.js', WaypointviewerJs), ('/wpt2json.json', Wpt2json)], debug=True)
+app = webapp.WSGIApplication([('/', MainPage), ('/waypointviewer.js', WaypointviewerJs), ('/wpt2json.json', Wpt2json)], debug=True)
 
 
 def main():
-    run_wsgi_app(application)
+    run_wsgi_app(app)
 
 
 if __name__ == '__main__':
