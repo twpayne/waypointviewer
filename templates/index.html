@@ -7,7 +7,7 @@
 		<script type="text/javascript" src="static/richmarker-compiled.js"></script>
 		<script type="text/javascript" src="static/sprintf-0.7-beta1.js"></script>
 		<script type="text/javascript" src="static/task.js"></script>
-		<script type="text/javascript" src="waypointviewer.js?kml={{ kml|urlencode }}&tsk={{ tsk|urlencode }}&wpt={{ wpt|urlencode }}"></script>
+		<script type="text/javascript" src="waypointviewer.js?kml={{ kml|urlencode }}&logo={{ logo|urlencode }}&tsk={{ tsk|urlencode }}&wpt={{ wpt|urlencode }}"></script>
 		<title>{% if title %}{{ title|escape }} - {% endif %}Waypoint Viewer</title>
 	</head>
 	<body>
@@ -229,6 +229,10 @@
 					(Optional) Title:<br/>
 					<input name="title" size="80" type="text" value="{{ title|escape }}"/><br/>
 					Example: <i>British Open Slovenia 2010</i>
+				</li>
+				<li>
+					(Optional) Logo hosted on your websever:<br/>
+					<input name="logo" size="80" type="text" value="{{ logo|escape }}"/><br/>
 				</li>
 				<li>
 					(Optional) Link to KML overlay hosted on your webserver:<br/>

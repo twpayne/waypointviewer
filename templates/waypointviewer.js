@@ -2,6 +2,7 @@
 /*global $: false, google: false, self: false, sprintf: false, RichMarker: false, RichMarkerPosition: false, Task: false, Turnpoint: false, Waypoint: false */
 
 var kml = '{{ kml|addslashes }}';
+var logo = '{{ logo|addslashes }}';
 var tsk = '{{ tsk|addslashes }}';
 var wpt = '{{ wpt|addslashes }}';
 
@@ -180,7 +181,7 @@ $.extend(Task.prototype, {
 });
 
 $(function () {
-	var fullScreenButton, kmlLayer, map, options;
+	var fullScreenButton, logoImg, kmlLayer, map, options;
 	options = {
 		disableDoubleClickZoom: true,
 		mapTypeId: google.maps.MapTypeId.TERRAIN,
@@ -202,6 +203,11 @@ $(function () {
 			top.location = self.location.href;
 		});
 		map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(fullScreenButton.get(0));
+	}
+	if (logo) {
+		logoImg = document.createElement('image');
+		logoImg.src = logo;
+		map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(logoImg);
 	}
 	$.getJSON('wpt2json.json?wpt=' + wpt, function (geojson) {
 		var bounds, infoWindow, task, taskBoardButton, waypoints;
