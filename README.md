@@ -31,6 +31,11 @@ waypoint files.
 specifies an optional title for the webpage.  It is recommended that you
 include this.
 
+### `logo=http://...`
+
+specifies an optional logo that is displayed in the bottom left corner of the
+map.
+
 ### `kml=http://...`
 
 specifies the URL of a KML file that is overlaid on the map.  This is useful
