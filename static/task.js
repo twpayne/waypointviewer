@@ -194,8 +194,11 @@ var Task, Turnpoint, Waypoint;
 			for (i = 0; i < 8; i += 1) {
 				for (j = 1; j < points.length - 1; j += 1) {
 					if (points[j].radius > 0) {
+						heading1 = computeHeading(path[j], path[j - 1]);
+						heading2 = computeHeading(path[j], path[j + 1]);
+						heading = Math.abs(heading1 - heading2);
 						crossTrackDistance = computeCrossTrackDistance(path[j - 1], path[j + 1], points[j].center, radius);
-						if (Math.abs(crossTrackDistance) < points[j].radius) {
+						if (heading > 90 && Math.abs(crossTrackDistance) < points[j].radius) {
 							alongTrackDistance = computeAlongTrackDistance(path[j - 1], path[j + 1], points[j].center, radius);
 							heading = computeHeading(path[j - 1], path[j + 1]);
 							path[j] = computeOffset(path[j - 1], alongTrackDistance, heading, radius);
